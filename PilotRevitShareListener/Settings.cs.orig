@@ -1,0 +1,26 @@
+﻿using System;
+
+namespace PilotRevitShareListener
+{
+<<<<<<< local
+    [Serializable]
+    public class Settings
+=======
+    public class Settings
+>>>>>>> other
+    {
+<<<<<<< local
+        public string ServerUrl { get; set; }
+        public string DbName { get; set; }
+        public string Login { get; set; }
+        public string Password { get; set; }
+        public int LicenseType { get; set; }
+=======
+        public string ServerUrl => "http://localhost:5545";
+        public string DbName => "pilot-ice_ru";
+        public string Login => "sedov";
+        public string Password => "F3nwYMgbE1qXnrrhC1tBAw==";
+        public int LicenseType => 100;
+>>>>>>> other
+    }
+}

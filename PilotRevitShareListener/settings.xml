@@ -1,0 +1,9 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Settings xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <ServerUrl>http://localhost:5545</ServerUrl>
+  <DbName>DATABASE_NAME</DbName>
+  <Login>LOGIN</Login>
+  <Password>PASSWORD</Password>
+  <LicenseType>100</LicenseType>
+  <SharePath>\\SHARE\REVIT_FOLDER</SharePath>
+</Settings>

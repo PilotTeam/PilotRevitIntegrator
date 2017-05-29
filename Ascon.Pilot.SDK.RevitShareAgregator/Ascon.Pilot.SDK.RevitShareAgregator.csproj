@@ -1,7 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
-  <Import Project="..\.build\MSBuild.Community.Tasks.Targets" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -33,15 +32,6 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Test|AnyCPU'">
-    <DebugSymbols>true</DebugSymbols>
-    <OutputPath>C:\Users\budaev\AppData\Local\ASCON\Pilot-ICE Enterprise\Development\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <DebugType>full</DebugType>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Ascon.Pilot.SDK, Version=17.0.13.16676, Culture=neutral, processorArchitecture=MSIL">
@@ -109,13 +99,4 @@
   <Target Name="AfterBuild">
   </Target>
   -->
-  <Target Name="AfterBuild">
-    <CallTarget Targets="Zip-Zip" />
-  </Target>
-  <Target Name="Zip-Zip">
-    <CreateItem Include="$(OutputPath)\**" Exclude="$(OutputPath)\*.zip">
-      <Output ItemName="ZipFiles" TaskParameter="Include" />
-    </CreateItem>
-    <Zip ZipFileName="$(OutputPath)\$(RootNamespace).zip" WorkingDirectory="$(OutputPath)\bin" Files="@(ZipFiles)" ZipLevel="9" />
-  </Target>
 </Project>
