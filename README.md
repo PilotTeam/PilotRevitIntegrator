@@ -1,4 +1,4 @@
-# PilotRevitAgregator
+# PilotRevitIntegrator
 Комплект из трёх компонентов для обеспечения совместный работы Pilot-ICE и Revit
 
 ## Схема взаимодействия компонентов
