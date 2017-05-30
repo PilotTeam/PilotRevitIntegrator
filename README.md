@@ -23,4 +23,5 @@ zip-архив содержит три компонента работающих
  1. Имя вашей базы данных `<DbName>DATABASE_NAME</DbName>`
  1. Логин и пароль служебной учётной записи `<Login>RevitShareListenerUser</Login>` и пароль `<Password>PASSWORD</Password>`
  1. Путь к сетевой папке проектов `<SharePath>\\server\revitshare</SharePath>`. Путь может быть локальным, если PilotRevitShareListener запущен на той же системе где расположена папка \\server\revitshare 
-1. Установить 
+1. Для установки и запуска службы выполните %ProgramData%\PilotRevitShareListener\install.cmd от администратора.
+
