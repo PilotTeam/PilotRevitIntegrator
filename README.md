@@ -12,7 +12,7 @@ zip-архив содержит три компонента работающих
 ## 2. Установка в базу Pilot-ICE модуля PilotRevitAgregator
 1. Pilot-ICE → Настройки → Расширения. Добавить файл Ascon.Pilot.SDK.PilotRevitAgregator.zip Настроить права доступа для всех пользователей Revit.
 1. Настроить путь к сетевой папке проектов \\server\revitshare. В меню СЕРВИС Pilot-ICE вызвать Настройки → Управление общими настройками → Revit project path for Agregator
-1. Настроить соответсвие сихнхронизируемых атрибутов проектов Pilot-ICE и проектов Revit. В меню СЕРВИС Pilot-ICE вызвать Настройки → Управление общими настройками → Revit project info attributes. Описание конфигурации:
+1. Настроить соответствие синхронизируемых атрибутов проектов Pilot-ICE и проектов Revit. В меню СЕРВИС Pilot-ICE вызвать Настройки → Управление общими настройками → Revit project info attributes. Описание конфигурации:
 ```
 <settings>
    <setting pilot="code" revit="Номер проекта"/>
