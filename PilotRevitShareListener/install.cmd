@@ -1,3 +1,3 @@
-sc create PilotRevitShareListener start="auto" binpath="###insert your path###\PilotRevitShareListener.exe"
+sc create PilotRevitShareListener start= "auto" binpath= "C:\ProgramData\PilotRevitShareListener\PilotRevitShareListener.exe"
 sc start PilotRevitShareListener 
 pause
