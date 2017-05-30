@@ -19,9 +19,9 @@ zip-архив содержит три компонента работающих
 1. С помощью Pilot-myAdmin создайте в базе данных служебную учётную запись RevitShareListenerUser и назначте на должность RevitShareListenerPosition. Наименование служебной учётной записи и должности могут быть любыми. Учётная запись должна быть либо с правами администратора, либо иметь доступ на создание в папках проектов 
 1. Скопируйте папку PilotRevitShareListener в %ProgramData%\
 1. В файле settings.xml настроить:
-  1. Адрес подключения к серверу `<ServerUrl>http://localhost:5545</ServerUrl>`
-  1. Имя вашей базы данных `<DbName>DATABASE_NAME</DbName>`
-  1. Логин и пароль служебной учётной записи `<Login>RevitShareListenerUser</Login>` и пароль `<Password>PASSWORD</Password>`
-  1. Путь к сетевой папке проектов `<SharePath>\\server\revitshare</SharePath>`. Путь может быть локальным, если PilotRevitShareListener запущен на той же системе где расположена папка \\server\revitshare 
+   1. Адрес подключения к серверу `<ServerUrl>http://localhost:5545</ServerUrl>`
+   1. Имя вашей базы данных `<DbName>DATABASE_NAME</DbName>`
+   1. Логин и пароль служебной учётной записи `<Login>RevitShareListenerUser</Login>` и пароль `<Password>PASSWORD</Password>`
+   1. Путь к сетевой папке проектов `<SharePath>\\server\revitshare</SharePath>`. Путь может быть локальным, если PilotRevitShareListener запущен на той же системе где расположена папка \\server\revitshare 
 1. Для установки и запуска службы выполните %ProgramData%\PilotRevitShareListener\install.cmd от администратора.
 
