@@ -17,7 +17,6 @@ zip-архив содержит три компонента работающих
 <settings>
    <setting pilot="code" revit="Номер проекта"/>
    <setting pilot="project_adress" revit="Адрес проекта"/>
-   <setting pilot="project_name" revit="Наименование проекта"/>
    <setting pilot="project_name" revit="Наименование объекта"/>
 </settings>
 ```
