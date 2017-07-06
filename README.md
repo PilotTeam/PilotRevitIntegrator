@@ -4,7 +4,7 @@
 ## Схема взаимодействия компонентов
 ![Схема](https://github.com/PilotTeam/PilotRevitIntegrator/blob/master/scheme.png)
 ## 1. Загрузка актуальных версий компонентов
-1. Готовые модули для установки можно загрузить по ссылке <https://github.com/PilotTeam/PilotRevitIntegrator/releases/>.
+1. Готовые модули для установки можно загрузить [по ссылке](https://github.com/PilotTeam/PilotRevitIntegrator/releases/).
 При использовании браузера IE проверьте отсутствие блокировки на загруженном zip-архиве (Свойства → Разблокировать). zip-архив содержит три компонента работающих совместно:
 1. PilotRevitAgregator — клиентский модуль расширения Pilot-ICE
 1. PilotRevitAddin — Add-In для Revit (поддерживаемая версия 2016 и выше)
