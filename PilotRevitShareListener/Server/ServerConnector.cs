@@ -25,7 +25,7 @@ namespace PilotRevitShareListener.Server
         public ServerConnector(Settings settings)
         {
             _settings = settings;
-            _client = new HttpPilotClient();
+            _client = new PilotRevitShareListener.HttpPilotClient();
         }
         
         public void Connect()

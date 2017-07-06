@@ -61,6 +61,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="HttpClient.cs" />
     <Compile Include="Server\ChangesetUploader.cs" />
     <Compile Include="FileArgs.cs" />
     <Compile Include="FileWaiter.cs" />
