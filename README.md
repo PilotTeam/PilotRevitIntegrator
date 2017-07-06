@@ -36,3 +36,6 @@
 1. Для установки и запуска службы выполните %ProgramData%\PilotRevitShareListener\install.cmd от администратора. Лог в процессе работы записывается в файл listener.log
 
 Все компоненты настроены.
+
+Внимание! Служба PilotRevitShareListener использует контракт взаимодействия с Pilot-Server, который может изменяться в будущих версиях Pilot-Server. Изменение контракта может привести к неработоспособности службы PilotRevitShareListener. В этом случае обновите службу PilotRevitShareListener до актуальной версии.   
+
