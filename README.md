@@ -1,5 +1,5 @@
 # PilotRevitIntegrator
-Комплект из трёх компонентов для обеспечения совместный работы Pilot-ICE и Revit
+Комплект из трёх компонентов для обеспечения совместный работы Pilot-ICE и Revit. Видео демонстрации работы https://www.youtube.com/watch?v=utMdCcetXCY
 
 ## Схема взаимодействия компонентов
 ![Схема](https://github.com/PilotTeam/PilotRevitIntegrator/blob/master/scheme.png)
@@ -21,7 +21,7 @@
 </settings>
 ```
 ## 3. Установка Add-In для Revit
-Поддерживаются версии Revit 2016 и выше
+Поддерживаются версии Revit 2016 и выше. Для Revit 2018 удалите службу Collaboration for Revit ![для доступности команды "Рабочие наборы" без предварительного сохранения проекта на диск](https://knowledge.autodesk.com/ru/support/revit-products/learn-explore/caas/CloudHelp/cloudhelp/2018/RUS/Revit-Collaborate/files/GUID-61C821EE-970C-46CC-B3BF-D03BE88E4288-htm.html) 
 1. Скопирвоать содержимое папки PilotRevitAddin в %ProgramData%\Autodesk\Revit\Addins на всех рабочих местах Revit
 В результате, при запуске Revit появится вкладка "Pilot-ICE".
 ## 4. Установка службы PilotRevitShareListener на сервер
