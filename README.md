@@ -31,7 +31,7 @@
    * Адрес подключения к серверу `<ServerUrl>http://localhost:5545</ServerUrl>`
    * Имя вашей базы данных `<DbName>DATABASE_NAME</DbName>`
    * Логин и пароль служебной учётной записи `<Login>RevitShareListenerUser</Login>` и пароль `<Password>PASSWORD</Password>`
-   * Путь к сетевой папке проектов `<SharePath>\\server\revitshare</SharePath>`. Путь может быть локальным, если PilotRevitShareListener запущен на той же системе где расположена папка `\\server\revitshare` 
+   * Путь к сетевой папке проектов, в которую клиенты Revit будут публиковать изменения моделей. Для службы PilotRevitShareListener этот путь может быть локальным `<SharePath>c:\revitshare</SharePath>` или сетвым  `<SharePath>\\server\revitshare</SharePath>`. При указании сетвого пути убедитесь, что учтёная запись, от которой запущена служба PilotRevitShareListener имеет доступ к указанной сетевой папке.
 1. Если папка `\\server\revitshare` и служба PilotRevitShareListener находятся на разных компьютерах, тогда пользователь под которым работает служба, должен обладать правами на чтение\запись в папку `\\server\revitshare`
 1. Для установки и запуска службы выполните %ProgramData%\PilotRevitShareListener\install.cmd от администратора. Лог в процессе работы записывается в файл listener.log
 
