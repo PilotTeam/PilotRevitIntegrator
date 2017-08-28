@@ -6,4 +6,5 @@
   <Password>PASSWORD</Password>
   <LicenseType>100</LicenseType>
   <SharePath>\\SHARE\REVIT_FOLDER</SharePath>
+  <Timeout>30000</Timeout>
 </Settings>
