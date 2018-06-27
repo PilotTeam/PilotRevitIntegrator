@@ -33,6 +33,7 @@
    * Логин и пароль служебной учётной записи `<Login>RevitShareListenerUser</Login>` и пароль `<Password>PASSWORD</Password>`
    * Тип лицензнии `<LicenseType>N</LicenseType>` , например, значение 100 для Pilot-ICE или 103 -для Pilot-ICE Enterprise
    * Путь к сетевой папке проектов, в которую клиенты Revit будут публиковать изменения моделей. Для службы PilotRevitShareListener этот путь может быть локальным `<SharePath>c:\revitshare</SharePath>` или сетвым  `<SharePath>\\server\revitshare</SharePath>`. При указании сетвого пути убедитесь, что учтёная запись, от которой запущена служба PilotRevitShareListener имеет доступ на чтение\запись к указанной сетевой папке.
+   * Чтобы изменить частоту обновления проверки сетевой папки, нужно указать `<Timeout>5000</Timeout>` (время в миллисекундах)
 1. Для установки и запуска службы выполните %ProgramData%\PilotRevitShareListener\install.cmd от администратора. Лог в процессе работы записывается в файл listener.log
 
 Все компоненты настроены.
