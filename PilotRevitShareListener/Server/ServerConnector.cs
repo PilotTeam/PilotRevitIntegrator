@@ -25,12 +25,12 @@ namespace PilotRevitShareListener.Server
         public ServerConnector(Settings settings)
         {
             _settings = settings;
-            _client = new PilotRevitShareListener.HttpPilotClient();
+            _client = new HttpPilotClient(_settings.ServerUrl);
         }
         
         public void Connect()
         {
-            _client.Connect(_settings.ServerUrl);
+            _client.Connect();
 
             ServerApi = _client.GetServerApi(new NullableServerCallback());
             ServerApi.OpenDatabase(_settings.DbName, _settings.Login, _settings.Password, false, _settings.LicenseType);
