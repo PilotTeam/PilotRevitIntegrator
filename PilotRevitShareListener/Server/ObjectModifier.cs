@@ -46,7 +46,7 @@ namespace PilotRevitShareListener.Server
 
         private DChange CreateSnapshot(DChange change)
         {
-            if (change.New.ActualFileSnapshot.IsEmpty)
+            if (change.New.ActualFileSnapshot.IsEmpty())
             {
                 change.New.PreviousFileSnapshots.Add(new DFilesSnapshot
                 {
