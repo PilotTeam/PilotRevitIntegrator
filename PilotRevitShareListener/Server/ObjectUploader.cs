@@ -84,7 +84,7 @@ namespace PilotRevitShareListener.Server
             };
         }
 
-        private string ComputeMd5(Stream stream)
+        private Md5 ComputeMd5(Stream stream)
         {
             if (stream.CanSeek)
                 stream.Position = 0;
@@ -92,8 +92,7 @@ namespace PilotRevitShareListener.Server
             using (var md5Hasher = new MD5CryptoServiceProvider())
             {
                 var data = md5Hasher.ComputeHash(stream);
-                var result = BitConverter.ToString(data).Replace("-", string.Empty).ToLower();
-                return result;
+                return new Md5() { Part1 = BitConverter.ToInt64(data, 0), Part2 = BitConverter.ToInt64(data, 8) };
             }
         }
     }

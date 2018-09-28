@@ -20,6 +20,7 @@ namespace PilotRevitShareListener.Server
 
         public int PersonId { get; private set; }
         public IServerApi ServerApi { get; private set; }
+        public IAuthenticationApi AuthenticationApi { get; private set; }
         public IFileArchiveApi FileArchiveApi { get; private set; }
 
         public ServerConnector(Settings settings)
@@ -33,14 +34,16 @@ namespace PilotRevitShareListener.Server
             _client.Connect();
 
             ServerApi = _client.GetServerApi(new NullableServerCallback());
-            ServerApi.OpenDatabase(_settings.DbName, _settings.Login, _settings.Password, false, _settings.LicenseType);
+            AuthenticationApi = _client.GetAuthenticationApi();
+            AuthenticationApi.Login(_settings.DbName, _settings.Login, _settings.Password, false, 100);
+            ServerApi.OpenDatabase();
 
             var people = ServerApi.LoadPeople();
             var person = people.FirstOrDefault(p => !p.IsDeleted && p.Login == _settings.Login);
             if (person != null)
                 PersonId = person.Id;
 
-            FileArchiveApi = _client.GetFileArchiveApi(_settings.DbName);
+            FileArchiveApi = _client.GetFileArchiveApi();
         }
 
         public void Disconnect()
