@@ -62,7 +62,7 @@ namespace PilotRevitShareListener.Server
             if (file.Body.Size > MinResumeUploadFileSize)
             {
                 //get file position from server
-                pos = _fileArchiveApi.GetFilePosition(string.Empty, file.Body.Id);
+                pos = _fileArchiveApi.GetFilePosition(file.Body.Id);
                 if (pos > file.Body.Size)
                     throw new Exception($"File with id {file.Body.Id} is corrupted");
             }
@@ -85,7 +85,7 @@ namespace PilotRevitShareListener.Server
                 UploadData(_fileStream, file.Body.Id, pos);
                 try
                 {
-                    _fileArchiveApi.PutFileInArchive(string.Empty, fileBody);
+                    _fileArchiveApi.PutFileInArchive(fileBody);
                     succeed = true;
                 }
                 catch (Exception e)
@@ -105,7 +105,7 @@ namespace PilotRevitShareListener.Server
         {
             if (fs.Length == 0)
             {
-                _fileArchiveApi.PutFileChunk(string.Empty, id, new byte[0], 0);
+                _fileArchiveApi.PutFileChunk(id, new byte[0], 0);
                 Logger.InfoFormat("Progress [{1}] of uploading file {0}", id, _uploaded);
                 return;
             }
@@ -117,7 +117,7 @@ namespace PilotRevitShareListener.Server
             while (pos < fs.Length)
             {
                 var readBytes = fs.Read(buffer, 0, chunkSize);
-                _fileArchiveApi.PutFileChunk(string.Empty, id, TrimBuffer(buffer, readBytes), pos);
+                _fileArchiveApi.PutFileChunk(id, TrimBuffer(buffer, readBytes), pos);
 
                 pos += readBytes;
                 _uploaded += readBytes;
