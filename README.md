@@ -1,11 +1,11 @@
 # PilotRevitIntegrator
-Комплект из трёх компонентов для обеспечения совместный работы Pilot-ICE и Revit
+Комплект из трёх компонентов для обеспечения совместный работы Pilot-ICE и Revit.
 
 ## Схема взаимодействия компонентов
 ![Схема](https://github.com/PilotTeam/PilotRevitIntegrator/blob/master/scheme.png)
 ## 1. Загрузка актуальных версий компонентов
-1. Готовые модули для установки можно загрузить по ссылке https://github.com/PilotTeam/PilotRevitIntegrator/releases/tag/v0.1-beta
-zip-архив содержит три компонента работающих совместно:
+1. Готовые модули для установки можно загрузить [по ссылке](https://github.com/PilotTeam/PilotRevitIntegrator/releases/).
+Проверьте отсутствие блокировки на загруженном zip-архиве (Свойства → Разблокировать). zip-архив содержит три компонента работающих совместно:
 1. PilotRevitAgregator — клиентский модуль расширения Pilot-ICE
 1. PilotRevitAddin — Add-In для Revit (поддерживаемая версия 2016 и выше)
 1. PilotRevitShareListener — служба Windows для отслеживания изменений RVT в папке revitshare и синхронизации изменений с базой Pilot
@@ -21,7 +21,7 @@ zip-архив содержит три компонента работающих
 </settings>
 ```
 ## 3. Установка Add-In для Revit
-Поддерживаются версии Revit 2016 и выше
+Поддерживаются версии Revit 2016 и выше. Для Revit 2018 удалите службу Collaboration for Revit [для доступности команды "Рабочие наборы" без предварительного сохранения проекта на диск](https://knowledge.autodesk.com/ru/support/revit-products/learn-explore/caas/CloudHelp/cloudhelp/2018/RUS/Revit-Collaborate/files/GUID-61C821EE-970C-46CC-B3BF-D03BE88E4288-htm.html) 
 1. Скопирвоать содержимое папки PilotRevitAddin в %ProgramData%\Autodesk\Revit\Addins на всех рабочих местах Revit
 В результате, при запуске Revit появится вкладка "Pilot-ICE".
 ## 4. Установка службы PilotRevitShareListener на сервер
@@ -31,7 +31,12 @@ zip-архив содержит три компонента работающих
    * Адрес подключения к серверу `<ServerUrl>http://localhost:5545</ServerUrl>`
    * Имя вашей базы данных `<DbName>DATABASE_NAME</DbName>`
    * Логин и пароль служебной учётной записи `<Login>RevitShareListenerUser</Login>` и пароль `<Password>PASSWORD</Password>`
-   * Путь к сетевой папке проектов `<SharePath>\\server\revitshare</SharePath>`. Путь может быть локальным, если PilotRevitShareListener запущен на той же системе где расположена папка `\\server\revitshare` 
+   * Тип лицензнии `<LicenseType>N</LicenseType>` , например, значение 100 для Pilot-ICE или 103 -для Pilot-ICE Enterprise
+   * Путь к сетевой папке проектов, в которую клиенты Revit будут публиковать изменения моделей. Для службы PilotRevitShareListener этот путь может быть локальным `<SharePath>c:\revitshare</SharePath>` или сетвым  `<SharePath>\\server\revitshare</SharePath>`. При указании сетвого пути убедитесь, что учтёная запись, от которой запущена служба PilotRevitShareListener имеет доступ на чтение\запись к указанной сетевой папке.
+   * Чтобы изменить частоту обновления проверки сетевой папки, нужно указать `<Timeout>5000</Timeout>` (время в миллисекундах)
 1. Для установки и запуска службы выполните %ProgramData%\PilotRevitShareListener\install.cmd от администратора. Лог в процессе работы записывается в файл listener.log
 
 Все компоненты настроены.
+
+Внимание! Служба PilotRevitShareListener использует контракт взаимодействия с Pilot-Server, который может изменяться в будущих версиях Pilot-Server. Изменение контракта может привести к неработоспособности службы PilotRevitShareListener. В этом случае обновите службу PilotRevitShareListener до актуальной версии.   
+
