@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Security.Cryptography;
-using Ascon.Pilot.Core;
+using Ascon.Pilot.DataClasses;
 using log4net;
 
 namespace PilotRevitShareListener.Server

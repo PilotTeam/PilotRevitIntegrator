@@ -10,7 +10,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("PilotRevitShareListener")]
-[assembly: AssemblyCopyright("Copyright ©  2017")]
+[assembly: AssemblyCopyright("Copyright © 2018")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -32,6 +32,6 @@ using System.Runtime.InteropServices;
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("18.0.28.29011")]
-[assembly: AssemblyFileVersion("18.0.28.29011")]
+[assembly: AssemblyVersion("18.37.0.30607")]
+[assembly: AssemblyFileVersion("18.37.0.30607")]
 [assembly: log4net.Config.XmlConfigurator(ConfigFile = "service.config", Watch = true)]

@@ -31,7 +31,7 @@ namespace PilotRevitShareListener.Server
         
         public void Connect()
         {
-            _client.Connect();
+            _client.Connect(false);
 
             ServerApi = _client.GetServerApi(new NullableServerCallback());
             AuthenticationApi = _client.GetAuthenticationApi();
