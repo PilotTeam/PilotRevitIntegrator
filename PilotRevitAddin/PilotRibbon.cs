@@ -7,7 +7,7 @@ using Autodesk.Revit.UI;
 namespace PilotRevitAddin
 {
     //40A992C2-CD30-4F75-8632-FEE0A4B8B44C
-    [Transaction(TransactionMode.Automatic)]
+    [Transaction(TransactionMode.Manual)]
     [Regeneration(RegenerationOption.Manual)]
     [Journaling(JournalingMode.NoCommandData)]
     public class PilotRibbon : IExternalApplication
