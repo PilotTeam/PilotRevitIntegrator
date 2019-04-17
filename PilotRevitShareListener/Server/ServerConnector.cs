@@ -35,7 +35,7 @@ namespace PilotRevitShareListener.Server
 
             ServerApi = _client.GetServerApi(new NullableServerCallback());
             AuthenticationApi = _client.GetAuthenticationApi();
-            AuthenticationApi.Login(_settings.DbName, _settings.Login, _settings.Password, false, 100);
+            AuthenticationApi.Login(_settings.DbName, _settings.Login, _settings.Password, false, _settings.LicenseCode);
             ServerApi.OpenDatabase();
 
             var people = ServerApi.LoadPeople();

@@ -4,7 +4,7 @@
   <DbName>DATABASE_NAME</DbName>
   <Login>LOGIN</Login>
   <Password>PASSWORD</Password>
-  <LicenseType>100</LicenseType>
+  <LicenseCode>100</LicenseCode>
   <SharePath>\\SHARE\REVIT_FOLDER</SharePath>
   <Timeout>30000</Timeout>
 </Settings>

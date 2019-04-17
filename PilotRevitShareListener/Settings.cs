@@ -9,7 +9,7 @@ namespace PilotRevitShareListener
         public string DbName { get; set; }
         public string Login { get; set; }
         public string Password { get; set; }
-        public int LicenseType { get; set; }
+        public int LicenseCode { get; set; }
         public string SharePath { get; set; }
         public double Timeout { get; set; }
     }
