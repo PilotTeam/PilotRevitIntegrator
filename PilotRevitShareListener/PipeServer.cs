@@ -13,27 +13,27 @@ namespace PilotRevitShareListener
 {
     public class PipeServer
     {
+        private readonly ILog _logger;
         private NamedPipeServerStream _pipe;
         private StreamString _pipeStream;
         private RemoteStorageThread _remoteStorageThread;
         private Settings _settings;
         private RevitShareListener _revitShareListener;
-        private readonly ILog _logger;
         private ObjectUploader _objectUploader;
-        private ReaderWriter _rw;
+        private ReaderWriter _readerWriter;
 
         private object threadLock = new object();
 
         private bool _isWaitingResponse;
 
-        public PipeServer(ReaderWriter rw , RemoteStorageThread remoteStorageThread,  RevitShareListener revitShareListener ,ObjectUploader objectUploader, ILog logger)
+        public PipeServer(ReaderWriter readerWriter , RemoteStorageThread remoteStorageThread,  RevitShareListener revitShareListener ,ObjectUploader objectUploader, ILog logger)
         {
             _objectUploader = objectUploader;
             _remoteStorageThread = remoteStorageThread;
             _revitShareListener = revitShareListener;
             _logger = logger;
-            _settings = rw.settings;
-            _rw = rw;
+            _settings = readerWriter.Settings;
+            _readerWriter = readerWriter;
             _isWaitingResponse = false;
         }
 
@@ -97,15 +97,15 @@ namespace PilotRevitShareListener
                         SendToAdminClient("failed: " + ex.Message);
                         break;
                     }
-                    if (_remoteStorageThread.IsConnected())
+                    if (_remoteStorageThread.CheckConnection())
                     {
                         _remoteStorageThread.Stop();
                         _logger.InfoFormat("Disconnected to server");
                     }
                     _remoteStorageThread.Start();
-                    WaitThread();
+                    WaitForThread();
 
-                    if (_remoteStorageThread.IsConnected())
+                    if (_remoteStorageThread.CheckConnection())
                     {
                         CreateListener();
                         _logger.InfoFormat("connected to server");
@@ -156,14 +156,14 @@ namespace PilotRevitShareListener
                     }
                     break;
                 case "--connection":
-                    if (_remoteStorageThread.IsConnected())
+                    if (_remoteStorageThread.CheckConnection())
                         SendToAdminClient("connected to " + _settings.ServerUrl + "/" + _settings.DbName);
                     else
                         SendToAdminClient("disconnected to server");
                     break;
 
                 case "--disconnect":
-                    if (!_remoteStorageThread.IsConnected())
+                    if (!_remoteStorageThread.CheckConnection())
                     {
                         SendToAdminClient("already disconnected");
                         break;
@@ -181,12 +181,12 @@ namespace PilotRevitShareListener
                     }
 
                     object[] dataBuffer = new object[] { _settings.ServerUrl, _settings.DbName, _settings.Login, _settings.Password };
-                    if (_remoteStorageThread.IsConnected())
+                    if (_remoteStorageThread.CheckConnection())
                     {
                         _remoteStorageThread.Stop();
                         _logger.InfoFormat("Disconnected to server");
                     }
-                    string[] subs = SplitUrl(command.args["url"]);//gets separate server url and database name
+                    string[] subs = SplitUrl(command.args["url"]);
                     if (subs == null)
                     {
                         SendToAdminClient("incorrect url");
@@ -198,9 +198,9 @@ namespace PilotRevitShareListener
                     _settings.Password = command.args["password"].EncryptAes();
 
                     _remoteStorageThread.Start();
-                    WaitThread();
+                    WaitForThread();
 
-                    if (_remoteStorageThread.IsConnected())
+                    if (_remoteStorageThread.CheckConnection())
                     {
                         CreateListener();
                         _logger.InfoFormat("connected to server");
@@ -222,7 +222,7 @@ namespace PilotRevitShareListener
 
         }
 
-        private void WaitThread()
+        private void WaitForThread()
         {
             while (_remoteStorageThread.Thread.ThreadState != (ThreadState.Background | ThreadState.WaitSleepJoin))
             {
@@ -234,7 +234,7 @@ namespace PilotRevitShareListener
      {
             _revitShareListener?.Dispose();
             _revitShareListener = new RevitShareListener(_objectUploader, _settings);
-            _rw.Write(_settings);
+            _readerWriter.Write();
         }
      private string[] SplitUrl (string url)
      {

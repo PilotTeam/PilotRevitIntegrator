@@ -7,30 +7,27 @@ namespace PilotRevitShareListener
 {
     public class ReaderWriter
     {
-        protected const string SettingsName = "settings.xml";
-        public Settings settings { get; set; }
-        readonly string _ServiceName;
+        private const string SETTINGS_NAME = "settings.xml";
+        private readonly string _serviceName;
 
-        public ReaderWriter(string ServiceName)
+        public ReaderWriter(string serviceName)
         {
-            _ServiceName = ServiceName;
-        }
-         string GetSettingsPath()
-        {
-            var path = System.Environment.GetFolderPath(System.Environment.SpecialFolder.CommonApplicationData) + @"\" + _ServiceName;
-            return Path.Combine(path, SettingsName);
+            _serviceName = serviceName;
         }
 
-        public void Write(Settings settings)
+        public Settings Settings { get; set; }
+       
+
+        public void Write()
         {
-            settings.Password = settings.Password.DecryptAes();
+            Settings.Password = Settings.Password.DecryptAes();
             var serializer = new XmlSerializer(typeof(Settings));
             Stream fStram = new FileStream(GetSettingsPath(), FileMode.Create, FileAccess.Write, FileShare.None);
             var writer = new StreamWriter(fStram);
-            serializer.Serialize(writer, settings);
+            serializer.Serialize(writer, Settings);
             writer.Close();
             fStram.Close();
-            settings.Password = settings.Password.EncryptAes();
+            Settings.Password = Settings.Password.EncryptAes();
         }
         public Settings Read()
         {
@@ -38,21 +35,26 @@ namespace PilotRevitShareListener
             try
             {
                 using (var reader = new StreamReader(GetSettingsPath()))
-                    settings = (Settings)serializer.Deserialize(reader);
-                if (settings != null)
-                    settings.Password = settings.Password.EncryptAes();
+                    Settings = (Settings)serializer.Deserialize(reader);
+                if (Settings != null)
+                    Settings.Password = Settings.Password.EncryptAes();
             }catch(FileNotFoundException)
             {
-                settings = new Settings();
-                settings.LicenseCode = 100;
-                settings.Timeout = 30000;
-                settings.SharePath = "";
-                settings.ServerUrl = "";
-                settings.DbName = "";
-                settings.Login = "";
-                settings.Password = "";
+                Settings = new Settings();
+                Settings.LicenseCode = 100;
+                Settings.Timeout = 30000;
+                Settings.SharePath = "";
+                Settings.ServerUrl = "";
+                Settings.DbName = "";
+                Settings.Login = "";
+                Settings.Password = "";
             }
-            return settings;
+            return Settings;
+        }
+        private string GetSettingsPath()
+        {
+            string path = System.Environment.GetFolderPath(System.Environment.SpecialFolder.CommonApplicationData) + @"\" + _serviceName;
+            return Path.Combine(path, SETTINGS_NAME);
         }
     }
 }

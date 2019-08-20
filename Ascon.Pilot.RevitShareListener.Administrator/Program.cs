@@ -7,16 +7,16 @@ using Newtonsoft.Json;
 
 namespace Ascon.Pilot.RevitShareListener.Administrator
 {
-    class Program
+    internal class Program
     {
 
-        static string SERVICE_NAME = "PilotRvtShareListener";
-        static string SERVER_NAME = "Pilot-Server";
-        static RSLServiceController ServiceController = new RSLServiceController(SERVICE_NAME);
-        static Dictionary<string, CommandParams> commands = new Dictionary<string, CommandParams>();
+        private const string SERVICE_NAME = "PilotRvtShareListener";
+        private const string SERVER_NAME = "Pilot-Server";
         private static string _appName;
+        private static RSLServiceController ServiceController = new RSLServiceController(SERVICE_NAME);
+        private static Dictionary<string, CommandParams> commands = new Dictionary<string, CommandParams>();
 
-        class CommandParams
+        internal class CommandParams
         {
             public string Description;
             public List<string> Params = new List<string>();
@@ -25,19 +25,18 @@ namespace Ascon.Pilot.RevitShareListener.Administrator
             public FunctionDelegate Function;
         }
 
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
             RegisterCommands();
             _appName = Path.GetFileNameWithoutExtension(AppDomain.CurrentDomain.FriendlyName);
             if (args.GetLength(0) > 0)
             {
-                args[0] = fixLetters(args[0].ToLower());
+                args[0] = FixLetters(args[0].ToLower());
                 if (commands.ContainsKey(args[0]))
                 {
                     if (ServiceController.GetStatus() == "stopped" && args[0] != "--help" &&
                         args[0] != "--status" && args[0] != "--stop" && args[0] != "--start")
                         StartService(args);
-
                     commands[args[0]].Function.Invoke(args);
                     return;
                 }
@@ -45,6 +44,7 @@ namespace Ascon.Pilot.RevitShareListener.Administrator
 
             if (ServiceController.GetStatus() == "stopped")
                 StartService(args);
+
             commands["--help"].Function.Invoke(new string[]{ "--help"});
             commands["--getPath"].Function.Invoke(new string[] { "--getPath" });
             commands["--getDelay"].Function.Invoke(new string[] { "--getDelay" });
@@ -52,7 +52,7 @@ namespace Ascon.Pilot.RevitShareListener.Administrator
             commands["--connection"].Function.Invoke(new string[] { "--connection" });
         }
 
-        static string fixLetters(string arg)
+        private static string FixLetters(string arg)
         {
             switch (arg)
             {
@@ -173,7 +173,7 @@ namespace Ascon.Pilot.RevitShareListener.Administrator
             commands["--connection"] = new CommandParams()
             {
                 Description = "check connection to "+SERVER_NAME,
-                Function = IsConnected
+                Function = CheckConnection
             };
 
             commands["--disconnect"] = new CommandParams()
@@ -203,14 +203,14 @@ namespace Ascon.Pilot.RevitShareListener.Administrator
             SendToServer(command, "rsl_admin");
         }
 
-        static void GetLicenseCode(string[] args)
+        private static void GetLicenseCode(string[] args)
         {
             PipeCommand command = new PipeCommand();
             command.commandName = args[0];
             SendToServer(command, "rsl_admin");
         }
 
-        static void PrintHelp(string[] args)
+        private static void PrintHelp(string[] args)
         {
             Console.WriteLine($"usage: {_appName} <command> [args]");
             Console.WriteLine(SERVICE_NAME+" command-line client.");
@@ -230,7 +230,7 @@ namespace Ascon.Pilot.RevitShareListener.Administrator
             }
         }
 
-        static void GetShareFolder(string[] args)
+        private static void GetShareFolder(string[] args)
         {
      
             PipeCommand command = new PipeCommand();
@@ -238,7 +238,7 @@ namespace Ascon.Pilot.RevitShareListener.Administrator
             SendToServer(command, "rsl_admin");
         }
 
-        static void SetSharedFolder(string[] args)
+        private static void SetSharedFolder(string[] args)
         {
 
             PipeCommand command = new PipeCommand();
@@ -254,14 +254,14 @@ namespace Ascon.Pilot.RevitShareListener.Administrator
 
         }
 
-        static void GetDelay(string[] args)
+        private static void GetDelay(string[] args)
         {
             PipeCommand command = new PipeCommand();
             command.commandName = args[0];
             SendToServer(command, "rsl_admin");
         }
 
-        static void SetDelay(string[] args)
+        private static void SetDelay(string[] args)
         {
             PipeCommand command = new PipeCommand();
             command.commandName = args[0];
@@ -277,7 +277,7 @@ namespace Ascon.Pilot.RevitShareListener.Administrator
         }
 
 
-        static void IsConnected(string[] args)
+        private static void CheckConnection(string[] args)
         {
             PipeCommand command = new PipeCommand();
             command.commandName = args[0];
@@ -286,19 +286,19 @@ namespace Ascon.Pilot.RevitShareListener.Administrator
 
 
 
-        static void PrintVersion(string[] args)
+        private static void PrintVersion(string[] args)
         {
             PipeCommand command = new PipeCommand();
             command.commandName = args[0];
             SendToServer(command, "rsl_admin");
         }
 
-        static void PrintStatus(string[] args)
+        private static void PrintStatus(string[] args)
         {
             Console.WriteLine(SERVICE_NAME + " service is " + ServiceController.GetStatus());
         }
 
-        static void StartService(string[] args)
+        private static void StartService(string[] args)
         {
             if (ServiceController.GetStatus() == "running")
             {
@@ -311,7 +311,7 @@ namespace Ascon.Pilot.RevitShareListener.Administrator
             PrintStatus(args);
         }
 
-        static void StopService(string[] args)
+        private static void StopService(string[] args)
         {
             if (ServiceController.GetStatus() == "stopped")
             {
@@ -324,14 +324,14 @@ namespace Ascon.Pilot.RevitShareListener.Administrator
             PrintStatus(args);
         }
 
-        static void OnDisconnect(string[] args)
+        private static void OnDisconnect(string[] args)
         {
             PipeCommand command = new PipeCommand();
             command.commandName = args[0];
             Console.WriteLine("disconnecting...");
             SendToServer(command, "rsl_admin");
         }
-        static void Connect(string[] args)
+        private static void Connect(string[] args)
         {
 
 
@@ -366,7 +366,7 @@ namespace Ascon.Pilot.RevitShareListener.Administrator
             SendToServer(command, "rsl_admin");
         }
 
-        public static string GetPassword()
+        private static string GetPassword()
         {
             string password = "";
             ConsoleKeyInfo key;

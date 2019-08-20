@@ -16,13 +16,13 @@ namespace PilotRevitShareListener.Server
 
         private readonly Queue<Action> _actions = new Queue<Action>();
         private bool _isConnected;
-        public Thread Thread { get; private set; }
-        public string ExeptionMsg { get; private set; }
         public RemoteStorageThread(IServerConnector serverConnector)
         {
             _serverConnector = serverConnector;
         }
 
+        public Thread Thread { get; private set; }
+        public string ExeptionMsg { get; private set; }
         public void Start()
         {
             _actions.Clear();
@@ -47,6 +47,19 @@ namespace PilotRevitShareListener.Server
             Disconnect();
         }
 
+        public void Enqueue(Action action)
+        {
+            lock (_actions)
+            {
+                _actions.Enqueue(action);
+                Monitor.Pulse(_actions);
+            }
+        }
+
+        public bool CheckConnection()
+        {
+            return _isConnected;
+        }
         private void Processing()
         {
             Action action = Peek();
@@ -148,18 +161,5 @@ namespace PilotRevitShareListener.Server
             }
         }
 
-        public void Enqueue(Action action)
-        {
-            lock (_actions)
-            {
-                _actions.Enqueue(action);
-                Monitor.Pulse(_actions);
-            }
-        }
-
-        public bool IsConnected()
-        {
-            return _isConnected;
-        }
     }
 }

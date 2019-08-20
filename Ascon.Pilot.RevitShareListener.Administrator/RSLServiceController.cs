@@ -2,9 +2,9 @@
 
 namespace Ascon.Pilot.RevitShareListener.Administrator
 {
-    class RSLServiceController
+    internal class RSLServiceController
     {
-        ServiceController _service;
+        private ServiceController _service;
 
         public RSLServiceController(string serviceName)
         {
