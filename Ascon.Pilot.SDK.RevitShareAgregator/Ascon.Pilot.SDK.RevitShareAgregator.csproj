@@ -85,9 +85,9 @@
       <Project>{1be77782-d574-4b8c-b77f-e7791fad51b7}</Project>
       <Name>Ascon.Pilot.SDK.Extensions</Name>
     </ProjectReference>
-    <ProjectReference Include="..\PilotRevitAddin\PilotRevitAddin.csproj">
-      <Project>{9c8076d3-8741-46a2-a438-63d3d935a355}</Project>
-      <Name>PilotRevitAddin</Name>
+    <ProjectReference Include="..\Ascon.Pilot.SharedProject\Ascon.Pilot.SharedProject.csproj">
+      <Project>{4b3ada69-f7d8-41bd-b72c-32442406c72f}</Project>
+      <Name>Ascon.Pilot.SharedProject</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

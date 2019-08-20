@@ -16,7 +16,8 @@ namespace PilotRevitShareListener.Server
 
         private readonly Queue<Action> _actions = new Queue<Action>();
         private bool _isConnected;
-
+        public Thread Thread { get; private set; }
+        public string ExeptionMsg { get; private set; }
         public RemoteStorageThread(IServerConnector serverConnector)
         {
             _serverConnector = serverConnector;
@@ -24,8 +25,9 @@ namespace PilotRevitShareListener.Server
 
         public void Start()
         {
-            var thread = new Thread(Processing) { IsBackground = true, Name = GetType().Name };
-            thread.Start();
+            _actions.Clear();
+            Thread = new Thread(Processing) { IsBackground = true, Name = GetType().Name };
+            Thread.Start();
             Enqueue(() => { });
         }
 
@@ -128,7 +130,7 @@ namespace PilotRevitShareListener.Server
             }
             catch (Exception ex)
             {
-                Logger.Error("Возникло иключение, блокирующее попытки переподключения к серверу", ex);
+                ExeptionMsg = ex.Message;
                 ForceOffline();
             }
         }
@@ -153,6 +155,11 @@ namespace PilotRevitShareListener.Server
                 _actions.Enqueue(action);
                 Monitor.Pulse(_actions);
             }
+        }
+
+        public bool IsConnected()
+        {
+            return _isConnected;
         }
     }
 }

@@ -16,6 +16,8 @@ namespace PilotRevitShareListener
         private IServerConnector _serverConnector;
         private Settings _settings;
         private RemoteStorageThread _remoteStorage;
+        private PipeServer _pipeServer;
+        private ObjectUploader _objectUploader;
 
         public ShareListenerService()
         {
@@ -25,31 +27,44 @@ namespace PilotRevitShareListener
         public void Start(ILog logger)
         {
             _logger = logger;
+            ReaderWriter rw = new ReaderWriter(ServiceName);
+            _settings = rw.Read();
             try
             {
-                _settings = SettingsReader.Read();
                 _serverConnector = new ServerConnector(_settings);
 
                 _remoteStorage = new RemoteStorageThread(_serverConnector);
                 _remoteStorage.Start();
 
-                var objectModifier = new ObjectModifier(_serverConnector, _serverConnector.PersonId);
-                var objectUploader = new ObjectUploader(_remoteStorage, objectModifier, _serverConnector);
+                var objectModifier = new ObjectModifier(_serverConnector);
+                _objectUploader = new ObjectUploader(_remoteStorage, objectModifier, _serverConnector);
 
-                _revitShareListener = new RevitShareListener(objectUploader, _settings);
-
+                _revitShareListener = new RevitShareListener(_objectUploader, _settings);
+                _pipeServer = new PipeServer(rw, _remoteStorage, _revitShareListener, _objectUploader, _logger);
+                _pipeServer.Start();
                 _logger.InfoFormat("{0} Started Successfully", ServiceName);
             }
-            catch (Exception ex)
+            catch (Exception)//in case of incorrect settings.xml 
             {
-                _logger.Error("OnStart Failed", ex);
+                _pipeServer = new PipeServer(rw, _remoteStorage, null, _objectUploader, _logger);
+                _pipeServer.Start();
             }
         }
 
         protected override void OnStart(string[] args)
         {
             _logger = LogManager.GetLogger(typeof(ShareListenerService));
-            _logger.InfoFormat("{0} OnStart", ServiceName);
+            var appender = new log4net.Appender.RollingFileAppender();
+            appender.AppendToFile = true;
+            appender.File = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData) + @"\"+ServiceName+@"\Logs\listener.log"; 
+            appender.MaxFileSize = 100000;
+            appender.MaxSizeRollBackups = 10;
+            appender.RollingStyle = log4net.Appender.RollingFileAppender.RollingMode.Size;
+            log4net.Config.BasicConfigurator.Configure(appender);
+            appender.Threshold = log4net.Core.Level.All;
+            appender.ActivateOptions();
+            appender.Layout = new log4net.Layout.PatternLayout("%date{dd-MM-yyyy HH:mm:ss} %5level [%2thread] %message %n");
+            _logger.Info("event occurred");
             SubscribeOnUnhandledExceptions();
             Start(_logger);
         }

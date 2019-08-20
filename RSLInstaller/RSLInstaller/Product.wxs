@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+
+
+  <?include "Variables.wxi" ?>
+  
+	<Product Id="*" Name="$(var.ProductName)" Language="1033" Version="1.0.0.0"  Manufacturer="$(var.Manufacturer)" UpgradeCode="B3204DD0-35A4-4424-9FB6-D11E6D6BABEE">
+		<Package InstallerVersion="200" Compressed="yes" InstallScope="perMachine" />
+
+		<MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
+		<MediaTemplate 
+      EmbedCab = "yes"/>
+
+  
+    
+    <Property Id="APPLICATIONFOLDER">
+      <RegistrySearch Id="InstallPathRegistry" Type="raw" Root="HKLM" Key="SOFTWARE\$(var.ProductName)" Name="InstallPath" Win64="$(var.Win64)"/>
+    </Property>
+
+    <Directory Id="TARGETDIR" Name="SourceDir">
+    <Directory Id="$(var.PlatformProgramFilesFolder)" Name="$(var.PlatformProgramFilesFolder)">
+        <Directory Id="APPLICATIONFOLDER" Name="$(var.ProductName)" >
+      </Directory>
+    </Directory>
+    </Directory>
+
+
+
+    <Feature Id="ProductFeature" Title="WIxSetpUp" Level="1">
+      <ComponentRef Id="Pilot_RvtShareListenerService.Administrator" />
+      <ComponentRef Id="NetStandardComponents" />
+      <ComponentRef Id="Pilot_RvtShareListenerService" />
+      <ComponentRef Id="cmdEnvironmentVariable" />
+		</Feature>
+
+    <Property Id="WIXUI_INSTALLDIR" Value="APPLICATIONFOLDER" />
+
+
+    <UI>
+      <UIRef Id="WixUI_InstallDir" />
+
+      <!-- Skip license dialog -->
+      <Publish Dialog="WelcomeDlg"
+               Control="Next"
+               Event="NewDialog"
+               Value="InstallDirDlg"
+               Order="2">1</Publish>
+      <Publish Dialog="InstallDirDlg"
+               Control="Back"
+               Event="NewDialog"
+               Value="WelcomeDlg"
+               Order="2">1</Publish>
+    </UI>
+   
+
+  </Product>
+</Wix>
