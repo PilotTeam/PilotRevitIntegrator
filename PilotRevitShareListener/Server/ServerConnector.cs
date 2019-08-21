@@ -27,33 +27,15 @@ namespace PilotRevitShareListener.Server
         {
             _settings = settings;
         }
-        
+
         public void Connect()
         {
             _client = new HttpPilotClient(_settings.ServerUrl);
-            try
-            {
-                _client.Connect(false);
-                ServerApi = _client.GetServerApi(new NullableServerCallback());
-            }
-            catch (System.Exception ex)
-            {
-                throw new System.Exception(ex.Message);
-            }
-            try
-            { 
-                AuthenticationApi = _client.GetAuthenticationApi();
-                AuthenticationApi.Login(_settings.DbName, _settings.Login, _settings.Password, false, _settings.LicenseCode);
+            _client.Connect(false);
 
-            }
-            catch (System.Exception ex) //catches chaotic ex.Message
-            {
-                if(ex.Message.Contains("Database"))
-                    throw new System.Exception("database ["+ _settings.DbName+"] not found");
-                if (ex.Message.Contains("The user name"))
-                    throw new System.Exception("the user name or password is incorrect");               
-                throw new System.Exception(ex.Message);
-            }
+            ServerApi = _client.GetServerApi(new NullableServerCallback());
+            AuthenticationApi = _client.GetAuthenticationApi();
+            AuthenticationApi.Login(_settings.DbName, _settings.Login, _settings.Password, false, _settings.LicenseCode);
             ServerApi.OpenDatabase();
 
             var people = ServerApi.LoadPeople();

@@ -22,7 +22,7 @@ namespace PilotRevitShareListener.Server
         }
 
         public Thread Thread { get; private set; }
-        public string ExeptionMsg { get; private set; }
+        public string ExceptionMessage { get; private set; }
         public void Start()
         {
             _actions.Clear();
@@ -143,7 +143,7 @@ namespace PilotRevitShareListener.Server
             }
             catch (Exception ex)
             {
-                ExeptionMsg = ex.Message;
+                ExceptionMessage = ex.Message;
                 ForceOffline();
             }
         }

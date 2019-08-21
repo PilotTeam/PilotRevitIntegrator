@@ -67,15 +67,16 @@ namespace PilotRevitShareListener
 
         private void WaitForConnectionCallBack(IAsyncResult iar)
         {
-                 _logger.InfoFormat("Pipe connection callback");
-                NamedPipeServerStream pipeServer = (NamedPipeServerStream)iar.AsyncState;
-                pipeServer.EndWaitForConnection(iar);
-                _isWaitingResponse = true;
+            _logger.InfoFormat("Pipe connection callback");
+            NamedPipeServerStream pipeServer = (NamedPipeServerStream)iar.AsyncState;
+            pipeServer.EndWaitForConnection(iar);
+            _isWaitingResponse = true;
 
-                _pipeStream = new StreamString(pipeServer);
-                var stringData = _pipeStream.ReadAnswer();
+            _pipeStream = new StreamString(pipeServer);
+            var stringData = _pipeStream.ReadAnswer();        
+            var command = JsonConvert.DeserializeObject<PipeCommand>(stringData);
 
-                var command = JsonConvert.DeserializeObject<PipeCommand>(stringData);
+            string result;
             switch (command.commandName)
             {
                 case "--version":
@@ -86,140 +87,179 @@ namespace PilotRevitShareListener
                     SendToAdminClient("license code is " + _settings.LicenseCode);
                     break;
                 case "--setLicenseCode":
-                    int codeBuffer = _settings.LicenseCode;
-                    try
-                    {
-                        _settings.LicenseCode = Int16.Parse(command.args["licensecode"]);
-                    }
-                    catch (Exception ex)
-                    {
-                        _settings.LicenseCode = codeBuffer;
-                        SendToAdminClient("failed: " + ex.Message);
-                        break;
-                    }
-                    if (_remoteStorageThread.CheckConnection())
-                    {
-                        _remoteStorageThread.Stop();
-                        _logger.InfoFormat("Disconnected to server");
-                    }
-                    _remoteStorageThread.Start();
-                    WaitForThread();
-
-                    if (_remoteStorageThread.CheckConnection())
-                    {
-                        CreateListener();
-                        _logger.InfoFormat("connected to server");
-                        _logger.InfoFormat("license code successfully changed");
-                        SendToAdminClient("license code successfully changed");
-                    }
-                    else
-                    {
-                        _logger.InfoFormat("disconnected to server");
-                        _logger.InfoFormat("license code changed");
-                        SendToAdminClient("license code changed, but connection failed: " + _remoteStorageThread.ExeptionMsg);
-                    }
+                    result =  SetLicenseCode(command);
+                    SendToAdminClient(result);
                     break;
                 case "--getPath":
-                    if (_settings.SharePath != "")
-                        SendToAdminClient("Revit shared folder path: " + _settings.SharePath);
-                    else
-                        SendToAdminClient("Revit shared folder path is not set");
+                    result = GetPath();
+                    SendToAdminClient(result);
                     break;
                 case "--setPath":
-                    string shareBuffer = _settings.SharePath;
-                    _settings.SharePath = command.args["path"];
-                    try
-                    {
-                        CreateListener();
-                        SendToAdminClient("path to Revit share folder successfully changed");
-                    }
-                    catch (Exception ex)
-                    {
-                        _settings.SharePath = shareBuffer;
-                        SendToAdminClient("failed: " + ex.Message);
-                    }
+                    result = SetPath(command.args["path"]);
+                    SendToAdminClient(result);
                     break;
-
                 case "--getDelay":
                     SendToAdminClient("delay: " + _settings.Timeout + " mls");
                     break;
                 case "--setDelay":
-                    try
-                    {
-                        _settings.Timeout = Double.Parse(command.args["delay"]);
-                        CreateListener();
-                        SendToAdminClient("time out successfully changed");
-                    }
-                    catch (FormatException ex)
-                    {
-                        SendToAdminClient("failed: " + ex.Message);
-                    }
+                    result = SetDelay(command);
+                    SendToAdminClient(result);
                     break;
                 case "--connection":
-                    if (_remoteStorageThread.CheckConnection())
-                        SendToAdminClient("connected to " + _settings.ServerUrl + "/" + _settings.DbName);
-                    else
-                        SendToAdminClient("disconnected to server");
+                    result = CheckConnection();
+                    SendToAdminClient(result);
                     break;
-
                 case "--disconnect":
-                    if (!_remoteStorageThread.CheckConnection())
-                    {
-                        SendToAdminClient("already disconnected");
-                        break;
-                    }
-                    _remoteStorageThread.Stop();
-                    _logger.InfoFormat("disconnected to server");
-                    SendToAdminClient("disconnection is successful");
+                    result = Disconnect();
+                    SendToAdminClient(result);
                     break;
                 case "--connect":
-
                     if (_settings.SharePath == "")
                     {
                         SendToAdminClient("Revit shared folder path is not set");
                         break;
                     }
-
-                    object[] dataBuffer = new object[] { _settings.ServerUrl, _settings.DbName, _settings.Login, _settings.Password };
-                    if (_remoteStorageThread.CheckConnection())
-                    {
-                        _remoteStorageThread.Stop();
-                        _logger.InfoFormat("Disconnected to server");
-                    }
-                    string[] subs = SplitUrl(command.args["url"]);
-                    if (subs == null)
-                    {
-                        SendToAdminClient("incorrect url");
-                        break;
-                    }
-                    _settings.ServerUrl = subs[0];
-                    _settings.DbName = subs[1];
-                    _settings.Login = command.args["login"];
-                    _settings.Password = command.args["password"].EncryptAes();
-
-                    _remoteStorageThread.Start();
-                    WaitForThread();
-
-                    if (_remoteStorageThread.CheckConnection())
-                    {
-                        CreateListener();
-                        _logger.InfoFormat("connected to server");
-                        SendToAdminClient("connection is successful");
-                    }
-                    else
-                    {
-                        _logger.InfoFormat("disconnected to server");
-                        _settings.ServerUrl = (string)dataBuffer[0];
-                        _settings.DbName = (string)dataBuffer[1];
-                        _settings.Login = (string)dataBuffer[2];
-                        _settings.Password = (string)dataBuffer[3];
-                        SendToAdminClient("connection failed: " + _remoteStorageThread.ExeptionMsg);
-                    }
+                    result = Reconnect(command);
+                    SendToAdminClient(result);
                     break;
                 default:
                     break;
             }
 
+        }
+
+        private string Reconnect(PipeCommand command)
+        {
+            object[] dataBuffer = new object[] { _settings.ServerUrl, _settings.DbName, _settings.Login, _settings.Password };
+            string[] subs = SplitUrl(command.args["url"]);
+            if (subs == null)
+            {
+                return "incorrect url";
+            }
+
+            _settings.ServerUrl = subs[0];
+            _settings.DbName = subs[1];
+            _settings.Login = command.args["login"];
+            _settings.Password = command.args["password"].EncryptAes();
+
+            bool result = Reconnect();
+            if (result)
+            {
+                CreateListener();
+                _readerWriter.Write();
+                return "connection is successful";
+            }
+            else
+            {
+                _settings.ServerUrl = (string)dataBuffer[0];
+                _settings.DbName = (string)dataBuffer[1];
+                _settings.Login = (string)dataBuffer[2];
+                _settings.Password = (string)dataBuffer[3];
+                return "connection failed: " + _remoteStorageThread.ExceptionMessage;
+            }
+        }
+
+        private bool Reconnect()
+        {
+            Disconnect();
+            _remoteStorageThread.Start();
+            WaitForThread();
+
+            if (_remoteStorageThread.CheckConnection())
+            {
+                _logger.InfoFormat("connected to server");
+                return true;
+            }
+            else
+            {
+                _logger.InfoFormat("disconnected to server");
+                return false;
+            }
+        }
+
+        private string Disconnect()
+        {
+            if (!_remoteStorageThread.CheckConnection())
+            {
+                return "already disconnected";
+            }
+            _remoteStorageThread.Stop();
+            _logger.InfoFormat("disconnected to server");
+            return "disconnected to server";
+        }
+
+        private string CheckConnection()
+        {
+            if (_remoteStorageThread.CheckConnection())
+                return "connected to " + _settings.ServerUrl + "/" + _settings.DbName;
+            else
+               return "disconnected to server";
+        }
+
+        private string SetDelay(PipeCommand command)
+        {
+            try
+            {
+                _settings.Timeout = Double.Parse(command.args["delay"]);
+                CreateListener();
+                _readerWriter.Write();
+                return "delay successfully changed";
+            }
+            catch (FormatException ex)
+            {
+                return "failed: " + ex.Message;
+            }
+        }
+
+        private string SetPath(string path)
+        {
+            string shareBuffer = _settings.SharePath;
+            _settings.SharePath = path;
+            try
+            {
+                CreateListener();
+                _readerWriter.Write();
+                return "path to Revit share folder successfully changed";
+            }
+            catch (Exception ex)
+            {
+                _settings.SharePath = shareBuffer;
+                return "failed: " + ex.Message;
+            }
+        }
+
+        private string GetPath()
+        {
+            if (_settings.SharePath != "")
+                return "Revit shared folder path: " + _settings.SharePath;
+            else
+                return "Revit shared folder path is not set";
+        }
+
+        private string SetLicenseCode(PipeCommand command)
+        {
+            int codeBuffer = _settings.LicenseCode;
+            try
+            {
+                _settings.LicenseCode = Int16.Parse(command.args["licensecode"]);
+            }
+            catch (Exception ex)
+            {
+                _settings.LicenseCode = codeBuffer;
+                return "failed: " + ex.Message;
+            }
+            _readerWriter.Write();
+            bool result = Reconnect(); 
+            if (result)
+            {
+                _logger.InfoFormat("license code successfully changed");
+                return "license code successfully changed";
+            }
+            else
+            {
+                _logger.InfoFormat("license code changed");
+                return "license code changed, but connection failed: " + _remoteStorageThread.ExceptionMessage;
+            }
         }
 
         private void WaitForThread()
@@ -234,7 +274,6 @@ namespace PilotRevitShareListener
      {
             _revitShareListener?.Dispose();
             _revitShareListener = new RevitShareListener(_objectUploader, _settings);
-            _readerWriter.Write();
         }
      private string[] SplitUrl (string url)
      {

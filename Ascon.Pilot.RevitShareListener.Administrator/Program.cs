@@ -1,20 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.IO.Pipes;
 using Ascon.Pilot.SharedProject;
-using Newtonsoft.Json;
 
 namespace Ascon.Pilot.RevitShareListener.Administrator
 {
     internal class Program
     {
-
         private const string SERVICE_NAME = "PilotRvtShareListener";
         private const string SERVER_NAME = "Pilot-Server";
         private static string _appName;
         private static RSLServiceController ServiceController = new RSLServiceController(SERVICE_NAME);
         private static Dictionary<string, CommandParams> commands = new Dictionary<string, CommandParams>();
+        private static Connector _connector;
 
         internal class CommandParams
         {
@@ -28,6 +26,7 @@ namespace Ascon.Pilot.RevitShareListener.Administrator
         private static void Main(string[] args)
         {
             RegisterCommands();
+            _connector = new Connector("rsl_admin"); 
             _appName = Path.GetFileNameWithoutExtension(AppDomain.CurrentDomain.FriendlyName);
             if (args.GetLength(0) > 0)
             {
@@ -73,31 +72,8 @@ namespace Ascon.Pilot.RevitShareListener.Administrator
             }
                 
         }
-            
-        public static void SendToServer(PipeCommand command, string PipeName, int TimeOut = 5000)
-        {
-            try
-            {
-                var serializedCommand = JsonConvert.SerializeObject(command);
-                NamedPipeClientStream pipeStream = new NamedPipeClientStream(".", PipeName, PipeDirection.InOut, PipeOptions.Asynchronous);
 
-                pipeStream.Connect(TimeOut);
-                StreamString ss = new StreamString(pipeStream);
-
-                ss.SendCommand(serializedCommand);
-                var answer = ss.ReadAnswer();
-
-                Console.WriteLine(answer);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("Error: " + "[" + ex.Source + "] " + ex.Message);
-            }
-        }
-
-
-
-        static void RegisterCommands()
+        private static void RegisterCommands()
         {
             commands["--help"] = new CommandParams()
             {
@@ -200,14 +176,14 @@ namespace Ascon.Pilot.RevitShareListener.Administrator
                 Console.WriteLine("specify license code in the command");
                 return;
             }
-            SendToServer(command, "rsl_admin");
+            _connector.SendToServer(command);
         }
 
         private static void GetLicenseCode(string[] args)
         {
             PipeCommand command = new PipeCommand();
             command.commandName = args[0];
-            SendToServer(command, "rsl_admin");
+            _connector.SendToServer(command);
         }
 
         private static void PrintHelp(string[] args)
@@ -235,7 +211,7 @@ namespace Ascon.Pilot.RevitShareListener.Administrator
      
             PipeCommand command = new PipeCommand();
             command.commandName = args[0];
-            SendToServer(command, "rsl_admin");
+            _connector.SendToServer(command);
         }
 
         private static void SetSharedFolder(string[] args)
@@ -250,7 +226,7 @@ namespace Ascon.Pilot.RevitShareListener.Administrator
                 Console.WriteLine("specify path in the command");
                 return;
             }
-            SendToServer(command, "rsl_admin");
+            _connector.SendToServer(command);
 
         }
 
@@ -258,7 +234,7 @@ namespace Ascon.Pilot.RevitShareListener.Administrator
         {
             PipeCommand command = new PipeCommand();
             command.commandName = args[0];
-            SendToServer(command, "rsl_admin");
+            _connector.SendToServer(command);
         }
 
         private static void SetDelay(string[] args)
@@ -273,7 +249,7 @@ namespace Ascon.Pilot.RevitShareListener.Administrator
                 return;
             }
 
-            SendToServer(command, "rsl_admin");
+            _connector.SendToServer(command);
         }
 
 
@@ -281,7 +257,7 @@ namespace Ascon.Pilot.RevitShareListener.Administrator
         {
             PipeCommand command = new PipeCommand();
             command.commandName = args[0];
-            SendToServer(command, "rsl_admin");
+            _connector.SendToServer(command);
         }
 
 
@@ -290,7 +266,7 @@ namespace Ascon.Pilot.RevitShareListener.Administrator
         {
             PipeCommand command = new PipeCommand();
             command.commandName = args[0];
-            SendToServer(command, "rsl_admin");
+            _connector.SendToServer(command);
         }
 
         private static void PrintStatus(string[] args)
@@ -329,12 +305,10 @@ namespace Ascon.Pilot.RevitShareListener.Administrator
             PipeCommand command = new PipeCommand();
             command.commandName = args[0];
             Console.WriteLine("disconnecting...");
-            SendToServer(command, "rsl_admin");
+            _connector.SendToServer(command);
         }
         private static void Connect(string[] args)
         {
-
-
             PipeCommand command = new PipeCommand();
             command.commandName = args[0];
 
@@ -363,7 +337,7 @@ namespace Ascon.Pilot.RevitShareListener.Administrator
                 return;
             }
             Console.WriteLine("connecting to " + command.args["url"]);
-            SendToServer(command, "rsl_admin");
+            _connector.SendToServer(command);
         }
 
         private static string GetPassword()
