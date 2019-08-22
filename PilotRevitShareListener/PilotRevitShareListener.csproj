@@ -196,8 +196,8 @@
     <Compile Include="Server\ObjectModifier.cs" />
     <Compile Include="Server\ObjectUploader.cs" />
     <Compile Include="RevitShareListener.cs" />
+    <Compile Include="Server\ConnectProvider.cs" />
     <Compile Include="Server\ServerConnector.cs" />
-    <Compile Include="Server\RemoteStorageThread.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="ShareListenerService.cs">
       <SubType>Component</SubType>

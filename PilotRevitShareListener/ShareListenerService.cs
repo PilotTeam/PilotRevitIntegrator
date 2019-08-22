@@ -15,9 +15,9 @@ namespace PilotRevitShareListener
         private RevitShareListener _revitShareListener;
         private IServerConnector _serverConnector;
         private Settings _settings;
-        private RemoteStorageThread _remoteStorage;
-        private PipeServer _pipeServer;
         private ObjectUploader _objectUploader;
+        private ConnectProvider _connectProvider;
+        private PipeServer _pipeServer;
 
         public ShareListenerService()
         {
@@ -33,20 +33,23 @@ namespace PilotRevitShareListener
             {
                 _serverConnector = new ServerConnector(_settings);
 
-                _remoteStorage = new RemoteStorageThread(_serverConnector);
-                _remoteStorage.Start();
+                _connectProvider = new ConnectProvider(_logger, _settings, _serverConnector);
+                _connectProvider.Connect();
 
                 var objectModifier = new ObjectModifier(_serverConnector);
-                _objectUploader = new ObjectUploader(_remoteStorage, objectModifier, _serverConnector);
+                _objectUploader = new ObjectUploader( objectModifier, _serverConnector);
+
 
                 _revitShareListener = new RevitShareListener(_objectUploader, _settings);
-                _pipeServer = new PipeServer(readerWriter, _remoteStorage, _revitShareListener, _objectUploader, _logger);
+                
+                _pipeServer = new PipeServer(_logger, readerWriter,_connectProvider,_objectUploader, _revitShareListener);
                 _pipeServer.Start();
+
                 _logger.InfoFormat("{0} Started Successfully", ServiceName);
             }
             catch (Exception)//in case of incorrect settings.xml 
             {
-                _pipeServer = new PipeServer(readerWriter, _remoteStorage, null, _objectUploader, _logger);
+                _pipeServer = new PipeServer(_logger, readerWriter, _connectProvider, _objectUploader ,null);
                 _pipeServer.Start();
             }
         }
