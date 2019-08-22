@@ -7,16 +7,24 @@ namespace Ascon.Pilot.RevitShareListener.Administrator
 {
     internal class Connector
     {
-        string _pipeName;
-        public Connector(string pipeName)
+        private string _pipeName;
+        private RSLServiceController _service;
+        public Connector(string pipeName, RSLServiceController service)
         {
             _pipeName = pipeName;
+            _service = service;
         }
 
         public void SendToServer(PipeCommand command, int TimeOut = 5000)
         {
             try
             {
+                if (_service.GetStatus() == "stopped")
+                {
+                    Console.WriteLine( "start service first");
+                    return;
+                }
+
                 var serializedCommand = JsonConvert.SerializeObject(command);
                 NamedPipeClientStream pipeStream = new NamedPipeClientStream(".", _pipeName, PipeDirection.InOut, PipeOptions.Asynchronous);
 

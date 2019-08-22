@@ -26,25 +26,34 @@ namespace Ascon.Pilot.RevitShareListener.Administrator
         private static void Main(string[] args)
         {
             RegisterCommands();
-            _connector = new Connector("rsl_admin"); 
+            _connector = new Connector("rsl_admin", ServiceController);
             _appName = Path.GetFileNameWithoutExtension(AppDomain.CurrentDomain.FriendlyName);
             if (args.GetLength(0) > 0)
             {
                 args[0] = FixLetters(args[0].ToLower());
                 if (commands.ContainsKey(args[0]))
                 {
-                    if (ServiceController.GetStatus() == "stopped" && args[0] != "--help" &&
-                        args[0] != "--status" && args[0] != "--stop" && args[0] != "--start")
-                        StartService(args);
-                    commands[args[0]].Function.Invoke(args);
+                    try
+                    {
+                        commands[args[0]].Function.Invoke(args);
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine(ex.Message);
+                    }
                     return;
                 }
             }
 
-            if (ServiceController.GetStatus() == "stopped")
-                StartService(args);
+            OnNoParameters();
+        }
 
-            commands["--help"].Function.Invoke(new string[]{ "--help"});
+        private static void OnNoParameters()
+        {
+            if (ServiceController.GetStatus() == "stopped")
+                StartService(null);
+
+            commands["--help"].Function.Invoke(new string[] { "--help" });
             commands["--getPath"].Function.Invoke(new string[] { "--getPath" });
             commands["--getDelay"].Function.Invoke(new string[] { "--getDelay" });
             commands["--getLicenseCode"].Function.Invoke(new string[] { "--getLicenseCode" });
