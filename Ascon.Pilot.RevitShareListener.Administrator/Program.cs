@@ -28,24 +28,22 @@ namespace Ascon.Pilot.RevitShareListener.Administrator
             RegisterCommands();
             _connector = new Connector("rsl_admin", ServiceController);
             _appName = Path.GetFileNameWithoutExtension(AppDomain.CurrentDomain.FriendlyName);
-            if (args.GetLength(0) > 0)
+            try
             {
-                args[0] = FixLetters(args[0].ToLower());
-                if (commands.ContainsKey(args[0]))
+                if (args.GetLength(0) > 0)
                 {
-                    try
+                    args[0] = FixLetters(args[0].ToLower());
+                    if (commands.ContainsKey(args[0]))
                     {
                         commands[args[0]].Function.Invoke(args);
+                        return;
                     }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine(ex.Message);
-                    }
-                    return;
                 }
+                OnNoParameters();
+            }catch(Exception ex)
+            {
+                Console.WriteLine(ex.Message);
             }
-
-            OnNoParameters();
         }
 
         private static void OnNoParameters()
