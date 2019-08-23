@@ -136,8 +136,7 @@ namespace PilotRevitShareListener
             if (_settings.SharePath == "")
                 return "Revit shared folder path is not set";
 
-            _reconnectProvider.Reconnect(command);
-            if(_reconnectProvider.CheckConnection())
+            if(_reconnectProvider.Reconnect(command))
             { 
                  if(_revitShareListener == null)
                     CreateNewListener();
@@ -221,8 +220,7 @@ namespace PilotRevitShareListener
                 return "failed: " + ex.Message;
             }
             _readerWriter.Write();
-            _reconnectProvider.Reconnect(); 
-            if (_reconnectProvider.CheckConnection())
+            if (_reconnectProvider.Reconnect())
             {
                 _readerWriter.Write();
                 _logger.InfoFormat("license code successfully changed");

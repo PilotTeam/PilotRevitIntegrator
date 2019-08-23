@@ -27,7 +27,7 @@ namespace PilotRevitShareListener.Server
             return _isConnected;
         }
 
-        public void Reconnect(PipeCommand command)
+        public bool Reconnect(PipeCommand command)
         {
             object[] dataBuffer = new object[] { _settings.ServerUrl, _settings.DbName, _settings.Login, _settings.Password };
             string[] subs = SplitUrl(command.args["url"]);
@@ -41,27 +41,29 @@ namespace PilotRevitShareListener.Server
             _settings.Login = command.args["login"];
             _settings.Password = command.args["password"].EncryptAes();
 
-            Reconnect();
-
-            if (!_isConnected)
+            if (!Reconnect())
             { 
                 _settings.ServerUrl = (string)dataBuffer[0];
                 _settings.DbName = (string)dataBuffer[1];
                 _settings.Login = (string)dataBuffer[2];
                 _settings.Password = (string)dataBuffer[3];
+                return false;
             }
+            return true;
         }
 
-        public void Reconnect()
+        public bool Reconnect()
         {
             try
             {
                 Disconnect();
                 Connect();
+                return true;
             }catch(Exception ex)
             {
                 _logger.InfoFormat("ex.Message");
                 ExceptionMessage = ex.Message;
+                return false;
             }
         }
 
