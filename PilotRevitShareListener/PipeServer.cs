@@ -139,7 +139,8 @@ namespace PilotRevitShareListener
             _reconnectProvider.Reconnect(command);
             if(_reconnectProvider.CheckConnection())
             { 
-                 CreateNewListener();
+                 if(_revitShareListener == null)
+                    CreateNewListener();
                 _readerWriter.Write();
                 return "connection is successful";
             }

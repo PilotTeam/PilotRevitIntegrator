@@ -33,12 +33,11 @@ namespace PilotRevitShareListener
             {
                 _serverConnector = new ServerConnector(_settings);
 
-                _connectProvider = new ConnectProvider(_logger, _settings, _serverConnector);
-                _connectProvider.Connect();
-
                 var objectModifier = new ObjectModifier(_serverConnector);
                 _objectUploader = new ObjectUploader( objectModifier, _serverConnector);
 
+                _connectProvider = new ConnectProvider(_logger, _settings, _serverConnector);
+                _connectProvider.Connect();
 
                 _revitShareListener = new RevitShareListener(_objectUploader, _settings);
                 
