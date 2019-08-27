@@ -1,4 +1,4 @@
-# PilotRevitIntegrator
+﻿# PilotRevitIntegrator
 Комплект из трёх компонентов для обеспечения совместный работы Pilot-ICE и Revit.
 
 ## Схема взаимодействия компонентов
@@ -26,15 +26,13 @@
 В результате, при запуске Revit появится вкладка "Pilot-ICE".
 ## 4. Установка службы PilotRevitShareListener на сервер
 1. С помощью Pilot-myAdmin создайте в базе данных служебную учётную запись RevitShareListenerUser и назначте на должность RevitShareListenerPosition. Наименование служебной учётной записи и должности могут быть любыми. Учётная запись должна быть либо с правами администратора, либо иметь доступ на создание в папках проектов 
-1. Скопируйте папку PilotRevitShareListener в %ProgramData%\
-1. В файле settings.xml настроить:
-   * Адрес подключения к серверу `<ServerUrl>http://localhost:5545</ServerUrl>`
-   * Имя вашей базы данных `<DbName>DATABASE_NAME</DbName>`
-   * Логин и пароль служебной учётной записи `<Login>RevitShareListenerUser</Login>` и пароль `<Password>PASSWORD</Password>`
-   * Тип лицензнии `<LicenseType>N</LicenseType>` , например, значение 100 для Pilot-ICE или 103 -для Pilot-ICE Enterprise
-   * Путь к сетевой папке проектов, в которую клиенты Revit будут публиковать изменения моделей. Для службы PilotRevitShareListener этот путь может быть локальным `<SharePath>c:\revitshare</SharePath>` или сетвым  `<SharePath>\\server\revitshare</SharePath>`. При указании сетвого пути убедитесь, что учтёная запись, от которой запущена служба PilotRevitShareListener имеет доступ на чтение\запись к указанной сетевой папке.
-   * Чтобы изменить частоту обновления проверки сетевой папки, нужно указать `<Timeout>5000</Timeout>` (время в миллисекундах)
-1. Для установки и запуска службы выполните %ProgramData%\PilotRevitShareListener\install.cmd от администратора. Лог в процессе работы записывается в файл listener.log
+1. Установите службу, запустив Pilot-RvtShareListener_x64
+1. Запустите командную строку, введя `cmd` в Пуске. В командной строке введите `RslAdmin`, чтобы получить список доступных команд управления службой. 
+   * Командой `RslAdmin --setPath [путь]` укажите путь к сетевой папке проектов, в которую клиенты Revit будут публиковать изменения моделей. Для службы PilotRevitShareListener этот путь может быть локальным `c:\revitshare` или сетвым  `\\server\revitshare`. При указании сетвого пути убедитесь, что учтёная запись, от которой запущена служба PilotRevitShareListener имеет доступ на чтение\запись к указанной сетевой папке.
+   * Чтобы изменить частоту обновления проверки сетевой папки, нужно ввести команду RslAdmin `--setDelay [интервал]` (время в миллисекундах)	
+   * Измените тип лицензии командой RslAdmin `--setLicenseCode [N]` (например, значение 100 для Pilot-ICE или 103 -для Pilot-ICE Enterprise)
+   * Подключитесь к серверу с помощью команды `RslAdmin --connect [url]` , где url - адрес подключения к серверу + имя вашей базы данных (например, `http://localhost:5545/DATABASE_NAME`). Затем введите логин `RevitShareListenerUser` и пароль служебной учётной записи
+   * Лог в процессе работы записывается в файл `\\ProgramData\Pilot-RvtShareListener\Logs\listener.log`
 
 Все компоненты настроены.
 

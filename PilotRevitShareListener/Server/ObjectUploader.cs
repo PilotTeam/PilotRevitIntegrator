@@ -15,13 +15,11 @@ namespace PilotRevitShareListener.Server
     {
         private static readonly ILog Logger = LogManager.GetLogger(typeof(ObjectUploader));
 
-        private readonly RemoteStorageThread _remoteStorage;
         private readonly IObjectModifier _objectModifier;
         private readonly IServerConnector _connector;
 
-        public ObjectUploader(RemoteStorageThread remoteStorage, IObjectModifier objectModifier, IServerConnector connector)
-        {
-            _remoteStorage = remoteStorage;
+        public ObjectUploader( IObjectModifier objectModifier, IServerConnector connector)
+        { 
             _objectModifier = objectModifier;
             _connector = connector;
         }
@@ -34,14 +32,11 @@ namespace PilotRevitShareListener.Server
             stream.Position = 0;
             copy.Position = 0;
 
-            _remoteStorage.Enqueue(() =>
-            {
-                var changesetData = CreateChangesetData(objectId, copy, fileName);
-                Logger.InfoFormat("ChangesetData was created for file with name {0}, with ObjectId {1}", fileName, objectId);
-                var uploader = new ChangesetUploader(copy, _connector.FileArchiveApi, changesetData);
-                uploader.Upload();
-                _objectModifier.Apply(changesetData);
-            });
+            var changesetData = CreateChangesetData(objectId, copy, fileName);
+            Logger.InfoFormat("ChangesetData was created for file with name {0}, with ObjectId {1}", fileName, objectId);
+            var uploader = new ChangesetUploader(copy, _connector.FileArchiveApi, changesetData);
+            uploader.Upload();
+            _objectModifier.Apply(changesetData);
         }
 
         private DChangesetData CreateChangesetData(Guid objectId, Stream stream, string fileName)

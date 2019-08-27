@@ -14,12 +14,10 @@ namespace PilotRevitShareListener.Server
     public class ObjectModifier : IObjectModifier
     {
         private readonly IServerConnector _connector;
-        private readonly int _personId;
 
-        public ObjectModifier(IServerConnector connector, int personId)
+        public ObjectModifier(IServerConnector connector)
         {
             _connector = connector;
-            _personId = personId;
         }
 
         public DChange EditObject(Guid objectId)
@@ -35,7 +33,7 @@ namespace PilotRevitShareListener.Server
         {
             if (change.Old.ActualFileSnapshot.Files.Count > 0)
                 change = CreateSnapshot(change);
-            change.New.ActualFileSnapshot.AddFile(file, _personId);
+            change.New.ActualFileSnapshot.AddFile(file, _connector.PersonId);
             return change;
         }
 
@@ -61,7 +59,7 @@ namespace PilotRevitShareListener.Server
 
             change.New.ActualFileSnapshot.Created = GetEffectiveCreated(change);
             change.New.ActualFileSnapshot.Reason = "Rvt updated";
-            change.New.ActualFileSnapshot.CreatorId = _personId;
+            change.New.ActualFileSnapshot.CreatorId = _connector.PersonId;
             change.New.ActualFileSnapshot.Files.Clear();
             return change;
         }

@@ -6,6 +6,7 @@ using Autodesk.Revit.DB;
 using Autodesk.Revit.UI;
 using Microsoft.Win32;
 using Newtonsoft.Json;
+using Ascon.Pilot.SharedProject;
 
 namespace PilotRevitAddin
 {

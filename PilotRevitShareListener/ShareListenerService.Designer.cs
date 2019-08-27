@@ -18,7 +18,7 @@
         private void InitializeComponent()
         {
             components = new System.ComponentModel.Container();
-            ServiceName = "ShareListenerService";
+            ServiceName = "Pilot-RvtShareListener";
         }
         #endregion
     }

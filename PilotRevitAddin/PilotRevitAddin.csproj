@@ -69,7 +69,6 @@
   <ItemGroup>
     <Compile Include="PilotRibbon.cs" />
     <Compile Include="PrepareProjectCommandAvailability.cs" />
-    <Compile Include="RevitProject.cs" />
     <Compile Include="StartDesigningCommand.cs" />
     <Compile Include="PrepareProjectCommand.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -87,6 +86,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Ascon.Pilot.SharedProject\Ascon.Pilot.SharedProject.csproj">
+      <Project>{4b3ada69-f7d8-41bd-b72c-32442406c72f}</Project>
+      <Name>Ascon.Pilot.SharedProject</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
