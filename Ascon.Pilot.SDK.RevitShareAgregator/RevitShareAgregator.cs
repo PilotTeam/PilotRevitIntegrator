@@ -24,6 +24,8 @@ namespace Ascon.Pilot.SDK.RevitShareAgregator
         private string _sharePath;
         private Dictionary<string, string> _revitProjectAttrsMap;
         private NamedPipeServerStream _updateSettingsPipeServer;
+        private NamedPipeServerStream _pipe;
+        private string _shareFilePathDirectory;
 
         [ImportingConstructor]
         public RevitShareAgregator(IObjectsRepository repository, IPersonalSettings personalSettings, IEventAggregator eventAggregator)
@@ -35,51 +37,50 @@ namespace Ascon.Pilot.SDK.RevitShareAgregator
             eventAggregator.Subscribe(this);
             _repository.SubscribeNotification(NotificationKind.StorageObjectCreated).Subscribe(OnNext, OnError);
             Task.Factory.StartNew(StartListeningUpdateSettingsCommand);
+            _pipe = new NamedPipeServerStream("PilotRevitAddinPipe", PipeDirection.InOut, 1, PipeTransmissionMode.Message);
+            _pipe.BeginWaitForConnection(new AsyncCallback(WaitForConnectionCallBack), _pipe);
         }
-
-        
-
         public void OnNext(INotification notification)
         {
             Dispatcher.CurrentDispatcher.BeginInvoke(new Action(() => HandleNotification(notification)));
         }
 
-        private async void HandleNotification(INotification notification)
+        private void WaitForConnectionCallBack(IAsyncResult arg)
         {
-            var token = new CancellationToken();
-            var obj = await _repository.AsyncMethods().GetObjectsAsync(new[] { notification.ObjectId }, CreateNode, token);
-            var dataObject = obj.FirstOrDefault();
-            var isRvt = dataObject != null && dataObject.ActualFileSnapshot.Files.Any(p => p.Name.Contains(".rvt"));
-            if (!isRvt)
-                return;
+            NamedPipeServerStream pipeServer = (NamedPipeServerStream)arg.AsyncState;
+            pipeServer.EndWaitForConnection(arg);
 
-            if (!_currentPersonId.Equals(notification.UserId))
-                return;
+            var _pipeStream = new StreamString(pipeServer);
+            var storageFilePath = _pipeStream.ReadAnswer();
 
-            var storageFilePath = _repository.GetStoragePath(dataObject.Id);
             var filePathWithoutDrive = storageFilePath.Substring(Path.GetPathRoot(storageFilePath).Length);
             if (_sharePath == null)
             {
                 MessageBox.Show("Share path is null");
                 return;
             }
-            var serializedProject = GetSerializedProject(storageFilePath, Path.Combine(_sharePath, filePathWithoutDrive), dataObject.Id);
-
-            using (var namedPipeClient = new NamedPipeClientStream(".", "PilotRevitAddinPipe"))
-            {
-                try
-                {
-                    namedPipeClient.Connect(10000);
-                }
-                catch (TimeoutException)
-                {
-                    return;
-                }
-                var messageBytes = Encoding.UTF8.GetBytes(serializedProject);
-                namedPipeClient.Write(messageBytes, 0, messageBytes.Length);
-            }
+            _shareFilePathDirectory = Path.Combine(_sharePath, filePathWithoutDrive);
+            var serializedProject = GetSerializedProject(storageFilePath, _shareFilePathDirectory, Guid.Empty);
+            _pipeStream.SendCommand(serializedProject);
+            _pipe.Close();
+            _pipe = new NamedPipeServerStream("PilotRevitAddinPipe", PipeDirection.InOut, 1, PipeTransmissionMode.Message);
+            _pipe.BeginWaitForConnection(new AsyncCallback(WaitForConnectionCallBack), _pipe);
         }
-       
+        private async void HandleNotification(INotification notification)
+        {
+            var token = new CancellationToken();
+            var obj = await _repository.AsyncMethods().GetObjectsAsync(new[] { notification.ObjectId }, CreateNode, token);
+            var dataObject = obj.FirstOrDefault();
+            var isRvt = dataObject != null && dataObject.ActualFileSnapshot.Files.Any(p => p.Name.Contains(".rvt"));
+            if (!isRvt || string.IsNullOrEmpty(_shareFilePathDirectory))
+                return;
+            if (!_currentPersonId.Equals(notification.UserId))
+                return;
+            var name = Path.GetFileNameWithoutExtension(dataObject.DisplayName);
+            var iniPath = Path.Combine(_shareFilePathDirectory, name + ".ini");
+            File.WriteAllText(iniPath, dataObject.Id.ToString());
+        }
+
         private void HandleRevitRequest(NamedPipeServerStream namedPipeServer, string modelPath)
         {
             var iniPath = modelPath + ".ini";

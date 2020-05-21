@@ -7,6 +7,7 @@ using Autodesk.Revit.UI;
 using Microsoft.Win32;
 using Newtonsoft.Json;
 using Ascon.Pilot.SharedProject;
+using System;
 
 namespace PilotRevitAddin
 {
@@ -29,38 +30,37 @@ namespace PilotRevitAddin
             if (saveFileDialog.ShowDialog() != true)
                 return Result.Cancelled;
 
-            File.WriteAllText(saveFileDialog.FileName, string.Empty);
-
-            using (var namedPipeServer = new NamedPipeServerStream("PilotRevitAddinPipe", PipeDirection.InOut, 1, PipeTransmissionMode.Message))
+            RevitProject revitProject;
+            using (var namedPipeClient = new NamedPipeClientStream(".", "PilotRevitAddinPipe"))
             {
-                namedPipeServer.WaitForConnection();
-                var messageBuilder = new StringBuilder();
-                var messageBuffer = new byte[983];
-                do
+                try
                 {
-                    namedPipeServer.Read(messageBuffer, 0, messageBuffer.Length);
-                    var messageChunk = Encoding.UTF8.GetString(messageBuffer).TrimEnd((char)0);
-                    messageBuilder.Append(messageChunk);
-                    messageBuffer = new byte[messageBuffer.Length];
-                } while (!namedPipeServer.IsMessageComplete);
-
-                var revitProject = JsonConvert.DeserializeObject<RevitProject>(messageBuilder.ToString());
-
-                var shareFilePathDirectory = Path.GetDirectoryName(revitProject.CentralModelPath);
-                if (shareFilePathDirectory == null)
+                    namedPipeClient.Connect(10000);
+                }
+                catch (TimeoutException)
+                {
                     return Result.Failed;
-
-                Directory.CreateDirectory(shareFilePathDirectory);
-                var iniPath = Path.Combine(shareFilePathDirectory, saveFileDialog.SafeFileName + ".ini");
-                File.WriteAllText(iniPath, revitProject.PilotObjectId);
-                var savingSettings = new SaveAsOptions() {OverwriteExistingFile = true};
-                savingSettings.SetWorksharingOptions(new WorksharingSaveAsOptions() { SaveAsCentral = true});
-
-                UpdateProjectSettingsCommand.UpdateProjectInfo(doc, revitProject);
-
-                doc.SaveAs(Path.Combine(revitProject.CentralModelPath), savingSettings);
+                }
+                StreamString ss = new StreamString(namedPipeClient);
+                ss.SendCommand(saveFileDialog.FileName);
+                var answer = ss.ReadAnswer();
+                revitProject = JsonConvert.DeserializeObject<RevitProject>(answer);
             }
-              
+
+            var shareFilePathDirectory = Path.GetDirectoryName(revitProject.CentralModelPath);
+            if (shareFilePathDirectory == null)
+                return Result.Failed;
+
+            Directory.CreateDirectory(shareFilePathDirectory);
+            var savingSettings = new SaveAsOptions() { OverwriteExistingFile = true };
+            savingSettings.SetWorksharingOptions(new WorksharingSaveAsOptions() { SaveAsCentral = true });
+
+            UpdateProjectSettingsCommand.UpdateProjectInfo(doc, revitProject);
+
+            doc.SaveAs(revitProject.CentralModelPath, savingSettings);
+            var pathSaveTo = Path.Combine(revitProject.CentralModelPath, Path.GetFileName(saveFileDialog.FileName));
+            File.Copy(pathSaveTo, saveFileDialog.FileName);
+
             return Result.Succeeded;
         }
     }

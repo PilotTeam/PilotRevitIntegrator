@@ -35,6 +35,10 @@ namespace PilotRevitShareListener
                 {
                     try
                     {
+                        var creation = File.GetCreationTime(filePath);
+                        var modification = File.GetLastWriteTime(filePath);
+                        if (DateTime.Compare(creation, modification) == 0)
+                            return;
                         using (var fileStream = File.Open(filePath, FileMode.Open))
                         {
                             _fileWaiter.Notify(new FileArgs(fileStream, filePath));
