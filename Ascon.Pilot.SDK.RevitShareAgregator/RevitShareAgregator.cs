@@ -11,8 +11,8 @@ using System.Windows;
 using System.Windows.Threading;
 using System.Xml.Linq;
 using Ascon.Pilot.SDK.Extensions;
+using Ascon.Pilot.SharedProject;
 using Newtonsoft.Json;
-using PilotRevitAddin;
 
 namespace Ascon.Pilot.SDK.RevitShareAgregator
 {
@@ -27,8 +27,8 @@ namespace Ascon.Pilot.SDK.RevitShareAgregator
 
         [ImportingConstructor]
         public RevitShareAgregator(IObjectsRepository repository, IPersonalSettings personalSettings, IEventAggregator eventAggregator)
-        {
-            _repository = repository;
+        {        
+            _repository = repository;            
             _currentPersonId = _repository.GetCurrentPerson().Id;
             personalSettings.SubscribeSetting(SettingsFeatureKeys.RevitAgregatorProjectPathKey).Subscribe(p => _sharePath = p.Value);
             personalSettings.SubscribeSetting(SettingsFeatureKeys.RevitProjectInfoKey).Subscribe(p => _revitProjectAttrsMap = GetRevitProjectAttrsMap(p.Value));
@@ -36,6 +36,8 @@ namespace Ascon.Pilot.SDK.RevitShareAgregator
             _repository.SubscribeNotification(NotificationKind.StorageObjectCreated).Subscribe(OnNext, OnError);
             Task.Factory.StartNew(StartListeningUpdateSettingsCommand);
         }
+
+        
 
         public void OnNext(INotification notification)
         {

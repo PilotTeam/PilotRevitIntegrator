@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi"
+     xmlns:util='http://schemas.microsoft.com/wix/UtilExtension'>
+
+  <?include "Variables.wxi" ?>
+  <Fragment>
+    <DirectoryRef Id="APPLICATIONFOLDER">
+      <Component Id="Pilot_RvtShareListenerService.Administrator" Win64="$(var.Win64)" Guid="5125FFC6-5C91-4663-804D-DBE6AE380537">
+      <File Id="Pilot_RvtShareListenerService.Administrator.exe" Source="$(var.Content)\RSLAdmin.exe" />
+      <File Id="Pilot_RvtShareListenerService.Administrator.exe.config" Source="$(var.Content)\RSLAdmin.exe.config" />
+      <File Id="Ascon.Pilot.SharedProject.dll" Source="$(var.Content)\Ascon.Pilot.SharedProject.dll" />
+      </Component>
+      
+      <Component Id="NetStandardComponents" Win64="$(var.Win64)" Guid="88B46DF4-81AD-42FF-97E6-8B6ECB579E65">
+        <File Id = "Microsoft.AspNetCore.Cryptography.Internal.dll" Source = "$(var.Content)\Microsoft.AspNetCore.Cryptography.Internal.dll" />
+        <File Id = "Microsoft.AspNetCore.DataProtection.Abstractions.dll" Source = "$(var.Content)\Microsoft.AspNetCore.DataProtection.Abstractions.dll" />
+        <File Id = "Microsoft.AspNetCore.DataProtection.dll" Source = "$(var.Content)\Microsoft.AspNetCore.DataProtection.dll" />
+        <File Id = "Microsoft.AspNetCore.DataProtection.Extensions.dll" Source = "$(var.Content)\Microsoft.AspNetCore.DataProtection.Extensions.dll" />
+        <File Id = "Microsoft.AspNetCore.Hosting.Abstractions.dll" Source = "$(var.Content)\Microsoft.AspNetCore.Hosting.Abstractions.dll" />
+        <File Id = "Microsoft.AspNetCore.Hosting.Server.Abstractions.dll" Source = "$(var.Content)\Microsoft.AspNetCore.Hosting.Server.Abstractions.dll" />
+        <File Id = "Microsoft.AspNetCore.Http.Abstractions.dll" Source = "$(var.Content)\Microsoft.AspNetCore.Http.Abstractions.dll" />
+        <File Id = "Microsoft.AspNetCore.Http.Features.dll" Source = "$(var.Content)\Microsoft.AspNetCore.Http.Features.dll" />
+        <File Id = "Microsoft.Extensions.Configuration.Abstractions.dll" Source = "$(var.Content)\Microsoft.Extensions.Configuration.Abstractions.dll" />
+        <File Id = "Microsoft.Extensions.DependencyInjection.Abstractions.dll" Source = "$(var.Content)\Microsoft.Extensions.DependencyInjection.Abstractions.dll" />
+        <File Id = "Microsoft.Extensions.DependencyInjection.dll" Source = "$(var.Content)\Microsoft.Extensions.DependencyInjection.dll" />
+        <File Id = "Microsoft.Extensions.FileProviders.Abstractions.dll" Source = "$(var.Content)\Microsoft.Extensions.FileProviders.Abstractions.dll" />
+        <File Id = "Microsoft.Extensions.Hosting.Abstractions.dll" Source = "$(var.Content)\Microsoft.Extensions.Hosting.Abstractions.dll" />
+        <File Id = "Microsoft.Extensions.Logging.Abstractions.dll" Source = "$(var.Content)\Microsoft.Extensions.Logging.Abstractions.dll" />
+        <File Id = "Microsoft.Extensions.Options.dll" Source = "$(var.Content)\Microsoft.Extensions.Options.dll" />
+        <File Id = "Microsoft.Extensions.Primitives.dll" Source = "$(var.Content)\Microsoft.Extensions.Primitives.dll" />
+        <File Id = "Microsoft.Win32.Primitives.dll" Source = "$(var.Content)\Microsoft.Win32.Primitives.dll" />
+        <File Id = "Microsoft.Win32.Registry.dll" Source = "$(var.Content)\Microsoft.Win32.Registry.dll" />
+        <File Id = "netstandard.dll" Source = "$(var.Content)\netstandard.dll" />
+        <File Id = "protobuf_net.dll" Source = "$(var.Content)\protobuf-net.dll" />
+        <File Id = "System.AppContext.dll" Source = "$(var.Content)\System.AppContext.dll" />
+        <File Id = "System.Buffers.dll" Source = "$(var.Content)\System.Buffers.dll" />
+        <File Id = "System.Collections.Concurrent.dll" Source = "$(var.Content)\System.Collections.Concurrent.dll" />
+        <File Id = "System.Collections.dll" Source = "$(var.Content)\System.Collections.dll" />
+        <File Id = "System.Collections.NonGeneric.dll" Source = "$(var.Content)\System.Collections.NonGeneric.dll" />
+        <File Id = "System.Collections.Specialized.dll" Source = "$(var.Content)\System.Collections.Specialized.dll" />
+        <File Id = "System.ComponentModel.dll" Source = "$(var.Content)\System.ComponentModel.dll" />
+        <File Id = "System.ComponentModel.EventBasedAsync.dll" Source = "$(var.Content)\System.ComponentModel.EventBasedAsync.dll" />
+        <File Id = "System.ComponentModel.Primitives.dll" Source = "$(var.Content)\System.ComponentModel.Primitives.dll" />
+        <File Id = "System.ComponentModel.TypeConverter.dll" Source = "$(var.Content)\System.ComponentModel.TypeConverter.dll" />
+        <File Id = "System.Console.dll" Source = "$(var.Content)\System.Console.dll" />
+        <File Id = "System.Data.Common.dll" Source = "$(var.Content)\System.Data.Common.dll" />
+        <File Id = "System.Diagnostics.Contracts.dll" Source = "$(var.Content)\System.Diagnostics.Contracts.dll" />
+        <File Id = "System.Diagnostics.Debug.dll" Source = "$(var.Content)\System.Diagnostics.Debug.dll" />
+        <File Id = "System.Diagnostics.FileVersionInfo.dll" Source = "$(var.Content)\System.Diagnostics.FileVersionInfo.dll" />
+        <File Id = "System.Diagnostics.Process.dll" Source = "$(var.Content)\System.Diagnostics.Process.dll" />
+        <File Id = "System.Diagnostics.StackTrace.dll" Source = "$(var.Content)\System.Diagnostics.StackTrace.dll" />
+        <File Id = "System.Diagnostics.TextWriterTraceListener.dll" Source = "$(var.Content)\System.Diagnostics.TextWriterTraceListener.dll" />
+        <File Id = "System.Diagnostics.Tools.dll" Source = "$(var.Content)\System.Diagnostics.Tools.dll" />
+        <File Id = "System.Diagnostics.TraceSource.dll" Source = "$(var.Content)\System.Diagnostics.TraceSource.dll" />
+        <File Id = "System.Diagnostics.Tracing.dll" Source = "$(var.Content)\System.Diagnostics.Tracing.dll" />
+        <File Id = "System.Drawing.Primitives.dll" Source = "$(var.Content)\System.Drawing.Primitives.dll" />
+        <File Id = "System.Dynamic.Runtime.dll" Source = "$(var.Content)\System.Dynamic.Runtime.dll" />
+        <File Id = "System.Globalization.Calendars.dll" Source = "$(var.Content)\System.Globalization.Calendars.dll" />
+        <File Id = "System.Globalization.dll" Source = "$(var.Content)\System.Globalization.dll" />
+        <File Id = "System.Globalization.Extensions.dll" Source = "$(var.Content)\System.Globalization.Extensions.dll" />
+        <File Id = "System.IO.Compression.dll" Source = "$(var.Content)\System.IO.Compression.dll" />
+        <File Id = "System.IO.Compression.ZipFile.dll" Source = "$(var.Content)\System.IO.Compression.ZipFile.dll" />
+        <File Id = "System.IO.dll" Source = "$(var.Content)\System.IO.dll" />
+        <File Id = "System.IO.FileSystem.dll" Source = "$(var.Content)\System.IO.FileSystem.dll" />
+        <File Id = "System.IO.FileSystem.DriveInfo.dll" Source = "$(var.Content)\System.IO.FileSystem.DriveInfo.dll" />
+        <File Id = "System.IO.FileSystem.Primitives.dll" Source = "$(var.Content)\System.IO.FileSystem.Primitives.dll" />
+        <File Id = "System.IO.FileSystem.Watcher.dll" Source = "$(var.Content)\System.IO.FileSystem.Watcher.dll" />
+        <File Id = "System.IO.IsolatedStorage.dll" Source = "$(var.Content)\System.IO.IsolatedStorage.dll" />
+        <File Id = "System.IO.MemoryMappedFiles.dll" Source = "$(var.Content)\System.IO.MemoryMappedFiles.dll" />
+        <File Id = "System.IO.Pipes.dll" Source = "$(var.Content)\System.IO.Pipes.dll" />
+        <File Id = "System.IO.UnmanagedMemoryStream.dll" Source = "$(var.Content)\System.IO.UnmanagedMemoryStream.dll" />
+        <File Id = "System.Linq.dll" Source = "$(var.Content)\System.Linq.dll" />
+        <File Id = "System.Linq.Expressions.dll" Source = "$(var.Content)\System.Linq.Expressions.dll" />
+        <File Id = "System.Linq.Parallel.dll" Source = "$(var.Content)\System.Linq.Parallel.dll" />
+        <File Id = "System.Linq.Queryable.dll" Source = "$(var.Content)\System.Linq.Queryable.dll" />
+        <File Id = "System.Memory.dll" Source = "$(var.Content)\System.Memory.dll" />
+        <File Id = "System.Net.Http.dll" Source = "$(var.Content)\System.Net.Http.dll" />
+        <File Id = "System.Net.NameResolution.dll" Source = "$(var.Content)\System.Net.NameResolution.dll" />
+        <File Id = "System.Net.NetworkInformation.dll" Source = "$(var.Content)\System.Net.NetworkInformation.dll" />
+        <File Id = "System.Net.Ping.dll" Source = "$(var.Content)\System.Net.Ping.dll" />
+        <File Id = "System.Net.Primitives.dll" Source = "$(var.Content)\System.Net.Primitives.dll" />
+        <File Id = "System.Net.Requests.dll" Source = "$(var.Content)\System.Net.Requests.dll" />
+        <File Id = "System.Net.Security.dll" Source = "$(var.Content)\System.Net.Security.dll" />
+        <File Id = "System.Net.Sockets.dll" Source = "$(var.Content)\System.Net.Sockets.dll" />
+        <File Id = "System.Net.WebHeaderCollection.dll" Source = "$(var.Content)\System.Net.WebHeaderCollection.dll" />
+        <File Id = "System.Net.WebSockets.Client.dll" Source = "$(var.Content)\System.Net.WebSockets.Client.dll" />
+        <File Id = "System.Net.WebSockets.dll" Source = "$(var.Content)\System.Net.WebSockets.dll" />
+        <File Id = "System.Numerics.Vectors.dll" Source = "$(var.Content)\System.Numerics.Vectors.dll" />
+        <File Id = "System.ObjectModel.dll" Source = "$(var.Content)\System.ObjectModel.dll" />
+        <File Id = "System.Reflection.DispatchProxy.dll" Source = "$(var.Content)\System.Reflection.DispatchProxy.dll" />
+        <File Id = "System.Reflection.dll" Source = "$(var.Content)\System.Reflection.dll" />
+        <File Id = "System.Reflection.Extensions.dll" Source = "$(var.Content)\System.Reflection.Extensions.dll" />
+        <File Id = "System.Reflection.Primitives.dll" Source = "$(var.Content)\System.Reflection.Primitives.dll" />
+        <File Id = "System.Resources.Reader.dll" Source = "$(var.Content)\System.Resources.Reader.dll" />
+        <File Id = "System.Resources.ResourceManager.dll" Source = "$(var.Content)\System.Resources.ResourceManager.dll" />
+        <File Id = "System.Resources.Writer.dll" Source = "$(var.Content)\System.Resources.Writer.dll" />
+        <File Id = "System.Runtime.CompilerServices.Unsafe.dll" Source = "$(var.Content)\System.Runtime.CompilerServices.Unsafe.dll" />
+        <File Id = "System.Runtime.CompilerServices.VisualC.dll" Source = "$(var.Content)\System.Runtime.CompilerServices.VisualC.dll" />
+        <File Id = "System.Runtime.dll" Source = "$(var.Content)\System.Runtime.dll" />
+        <File Id = "System.Runtime.Extensions.dll" Source = "$(var.Content)\System.Runtime.Extensions.dll" />
+        <File Id = "System.Runtime.Handles.dll" Source = "$(var.Content)\System.Runtime.Handles.dll" />
+        <File Id = "System.Runtime.InteropServices.dll" Source = "$(var.Content)\System.Runtime.InteropServices.dll" />
+        <File Id = "System.Runtime.InteropServices.RuntimeInformation.dll" Source = "$(var.Content)\System.Runtime.InteropServices.RuntimeInformation.dll" />
+        <File Id = "System.Runtime.Numerics.dll" Source = "$(var.Content)\System.Runtime.Numerics.dll" />
+        <File Id = "System.Runtime.Serialization.Formatters.dll" Source = "$(var.Content)\System.Runtime.Serialization.Formatters.dll" />
+        <File Id = "System.Runtime.Serialization.Json.dll" Source = "$(var.Content)\System.Runtime.Serialization.Json.dll" />
+        <File Id = "System.Runtime.Serialization.Primitives.dll" Source = "$(var.Content)\System.Runtime.Serialization.Primitives.dll" />
+        <File Id = "System.Runtime.Serialization.Xml.dll" Source = "$(var.Content)\System.Runtime.Serialization.Xml.dll" />
+        <File Id = "System.Security.AccessControl.dll" Source = "$(var.Content)\System.Security.AccessControl.dll" />
+        <File Id = "System.Security.Claims.dll" Source = "$(var.Content)\System.Security.Claims.dll" />
+        <File Id = "System.Security.Cryptography.Algorithms.dll" Source = "$(var.Content)\System.Security.Cryptography.Algorithms.dll" />
+        <File Id = "System.Security.Cryptography.Csp.dll" Source = "$(var.Content)\System.Security.Cryptography.Csp.dll" />
+        <File Id = "System.Security.Cryptography.Encoding.dll" Source = "$(var.Content)\System.Security.Cryptography.Encoding.dll" />
+        <File Id = "System.Security.Cryptography.Primitives.dll" Source = "$(var.Content)\System.Security.Cryptography.Primitives.dll" />
+        <File Id = "System.Security.Cryptography.ProtectedData.dll" Source = "$(var.Content)\System.Security.Cryptography.ProtectedData.dll" />
+        <File Id = "System.Security.Cryptography.X509Certificates.dll" Source = "$(var.Content)\System.Security.Cryptography.X509Certificates.dll" />
+        <File Id = "System.Security.Cryptography.Xml.dll" Source = "$(var.Content)\System.Security.Cryptography.Xml.dll" />
+        <File Id = "System.Security.Permissions.dll" Source = "$(var.Content)\System.Security.Permissions.dll" />
+        <File Id = "System.Security.Principal.dll" Source = "$(var.Content)\System.Security.Principal.dll" />
+        <File Id = "System.Security.Principal.Windows.dll" Source = "$(var.Content)\System.Security.Principal.Windows.dll" />
+        <File Id = "System.Security.SecureString.dll" Source = "$(var.Content)\System.Security.SecureString.dll" />
+        <File Id = "System.Text.Encoding.dll" Source = "$(var.Content)\System.Text.Encoding.dll" />
+        <File Id = "System.Text.Encoding.Extensions.dll" Source = "$(var.Content)\System.Text.Encoding.Extensions.dll" />
+        <File Id = "System.Text.Encodings.Web.dll" Source = "$(var.Content)\System.Text.Encodings.Web.dll" />
+        <File Id = "System.Text.RegularExpressions.dll" Source = "$(var.Content)\System.Text.RegularExpressions.dll" />
+        <File Id = "System.Threading.dll" Source = "$(var.Content)\System.Threading.dll" />
+        <File Id = "System.Threading.Overlapped.dll" Source = "$(var.Content)\System.Threading.Overlapped.dll" />
+        <File Id = "System.Threading.Tasks.dll" Source = "$(var.Content)\System.Threading.Tasks.dll" />
+        <File Id = "System.Threading.Tasks.Parallel.dll" Source = "$(var.Content)\System.Threading.Tasks.Parallel.dll" />
+        <File Id = "System.Threading.Thread.dll" Source = "$(var.Content)\System.Threading.Thread.dll" />
+        <File Id = "System.Threading.ThreadPool.dll" Source = "$(var.Content)\System.Threading.ThreadPool.dll" />
+        <File Id = "System.Threading.Timer.dll" Source = "$(var.Content)\System.Threading.Timer.dll" />
+        <File Id = "System.ValueTuple.dll" Source = "$(var.Content)\System.ValueTuple.dll" />
+        <File Id = "System.Xml.ReaderWriter.dll" Source = "$(var.Content)\System.Xml.ReaderWriter.dll" />
+        <File Id = "System.Xml.XDocument.dll" Source = "$(var.Content)\System.Xml.XDocument.dll" />
+        <File Id = "System.Xml.XmlDocument.dll" Source = "$(var.Content)\System.Xml.XmlDocument.dll" />
+        <File Id = "System.Xml.XmlSerializer.dll" Source = "$(var.Content)\System.Xml.XmlSerializer.dll" />
+        <File Id = "System.Xml.XPath.dll" Source = "$(var.Content)\System.Xml.XPath.dll" />
+        <File Id = "System.Xml.XPath.XDocument.dll" Source = "$(var.Content)\System.Xml.XPath.XDocument.dll" />
+      </Component>
+
+      <Component Id="Pilot_RvtShareListenerService" Win64="$(var.Win64)" Guid="471AEEC5-70B4-4056-B7EB-8743FD195C08">
+        <File Id="PilotRvtShareListener" Source="$(var.Content)\Pilot-RvtShareListenerService.exe" />
+        <File Id="Newtonsoft.Json.dll" Source="$(var.Content)\Newtonsoft.Json.dll" />
+        <File Id = "Ascon.Pilot.Common.dll" Source = "$(var.Content)\Ascon.Pilot.Common.dll" />
+        <File Id = "Ascon.Pilot.Core.dll" Source = "$(var.Content)\Ascon.Pilot.Core.dll" />
+        <File Id = "Ascon.Pilot.DataClasses.dll" Source = "$(var.Content)\Ascon.Pilot.DataClasses.dll" />
+        <File Id = "Ascon.Pilot.Server.Api.dll" Source = "$(var.Content)\Ascon.Pilot.Server.Api.dll" />
+        <File Id = "Ascon.Pilot.Transport.dll" Source = "$(var.Content)\Ascon.Pilot.Transport.dll" />
+        <File Id = "log4net.dll" Source = "$(var.Content)\log4net.dll" />
+        <ServiceInstall
+          Id="PilotRvtShareListener"
+          Type="ownProcess"
+          Name="PilotRvtShareListener"
+          DisplayName="Pilot Revit Share Listener Service"
+          Description="Provides storage, processing and controlled access of data"
+          Start="auto"
+          Account="LocalSystem"
+          ErrorControl="normal">
+          <util:PermissionEx
+            User="Everyone"
+            ServicePauseContinue="yes"
+            ServiceQueryStatus="yes"
+            ServiceStart="yes"
+            ServiceStop="yes"
+            ServiceUserDefinedControl="yes" />
+        </ServiceInstall>
+        <ServiceControl Id="PilotRvtShareListener" Start="install" Stop="uninstall" Remove="uninstall" Name="PilotRvtShareListener" Wait="yes" />
+      </Component>
+
+      <Component Id="cmdEnvironmentVariable" Win64="$(var.Win64)" Guid="69FD86A4-C9FC-4F1A-8654-727840C8B667">
+        <CreateFolder />
+        <Environment Id="PATH" Name="PATH" Value="[APPLICATIONFOLDER]" Permanent="no" Part="last" Action="set" System="yes" />
+      </Component>
+      
+    </DirectoryRef>
+  </Fragment>
+</Wix>
