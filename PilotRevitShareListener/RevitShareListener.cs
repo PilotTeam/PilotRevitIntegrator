@@ -61,7 +61,6 @@ namespace PilotRevitShareListener
 
                 Logger.InfoFormat("Changing object {0} with file {1}", objectId, args.FilePath);
                 _objectUploader.Upload(objectId, args.Stream, fileName);
-                Logger.InfoFormat("Object {0} updated", objectId);
             }
             catch (Exception e)
             {

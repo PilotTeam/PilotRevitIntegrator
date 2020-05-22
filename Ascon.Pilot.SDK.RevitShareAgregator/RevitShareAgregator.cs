@@ -74,13 +74,13 @@ namespace Ascon.Pilot.SDK.RevitShareAgregator
                 objId = new Guid(line);
             }
             
-            var serialisedProject = GetSerializedProject(_repository.GetStoragePath(objId), modelPath, objId);
+            var serialisedProject = GetSerializedProject(_repository.GetStoragePath(objId), modelPath);
             var messageBytes = Encoding.UTF8.GetBytes(serialisedProject);
             namedPipeServer.Write(messageBytes, 0, messageBytes.Length);
         }
 
 
-        private string GetSerializedProject(string storageFilePath, string centralModelPath, Guid objId)
+        private string GetSerializedProject(string storageFilePath, string centralModelPath)
         {
             var project = GetProject(storageFilePath);
             var projectAttributes = project.DataObject.Attributes;
@@ -101,7 +101,6 @@ namespace Ascon.Pilot.SDK.RevitShareAgregator
             var revitProject = new RevitProject()
             {
                 CentralModelPath = centralModelPath,
-                PilotObjectId = objId.ToString(),
                 ProjectInfoAttrsMap = revitattrsMap
             };
 
@@ -173,22 +172,22 @@ namespace Ascon.Pilot.SDK.RevitShareAgregator
                 MessageBox.Show("Share path is null. Please set share path in common settings.");
                 return;
             }
-            //try
-            //{
+            try
+            {
                 _prepareProjectPipeServer.EndWaitForConnection(ar);
                 var _pipeStream = new StreamString(_prepareProjectPipeServer);
                 var storageFilePath = _pipeStream.ReadAnswer();
                 var filePathWithoutDrive = storageFilePath.Substring(Path.GetPathRoot(storageFilePath).Length);
                 _shareFilePath = Path.Combine(_sharePath, filePathWithoutDrive);
-                var serializedProject = GetSerializedProject(storageFilePath, _shareFilePath, Guid.Empty);
+                var serializedProject = GetSerializedProject(storageFilePath, _shareFilePath);
                 _pipeStream.SendCommand(serializedProject);
 
                 _prepareProjectPipeServer.Disconnect();
                 _prepareProjectPipeServer.BeginWaitForConnection(PrepareProject, null);
-            //}
-            //catch (ObjectDisposedException)
-            //{
-            //}
+            }
+            catch (ObjectDisposedException)
+            {
+            }
         }
         private void UpdateSettings(IAsyncResult ar)
         {

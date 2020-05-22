@@ -60,7 +60,7 @@ namespace PilotRevitAddin
             UpdateProjectSettingsCommand.UpdateProjectInfo(doc, revitProject);
 
             doc.SaveAs(revitProject.CentralModelPath, savingSettings);
-            File.Copy(revitProject.CentralModelPath, saveFileDialog.FileName);
+            File.Copy(revitProject.CentralModelPath, saveFileDialog.FileName, true);
 
             return Result.Succeeded;
         }

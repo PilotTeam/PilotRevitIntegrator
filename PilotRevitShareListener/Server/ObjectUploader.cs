@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Security.Cryptography;
 using Ascon.Pilot.DataClasses;
 using log4net;
@@ -33,10 +34,13 @@ namespace PilotRevitShareListener.Server
             copy.Position = 0;
 
             var changesetData = CreateChangesetData(objectId, copy, fileName);
+            if (changesetData == null)
+                return;
             Logger.InfoFormat("ChangesetData was created for file with name {0}, with ObjectId {1}", fileName, objectId);
             var uploader = new ChangesetUploader(copy, _connector.FileArchiveApi, changesetData);
             uploader.Upload();
             _objectModifier.Apply(changesetData);
+            Logger.InfoFormat("Object {0} updated", objectId);
         }
 
         private DChangesetData CreateChangesetData(Guid objectId, Stream stream, string fileName)
@@ -53,12 +57,25 @@ namespace PilotRevitShareListener.Server
             var change = _objectModifier.EditObject(objectId);
             change = _objectModifier.AddFile(change, file, fileName);
 
+            if (IsSameFileAdded(change))
+            {
+                Logger.InfoFormat("Update canceled: same file were added");
+                return null;
+            }
+
             var changesetData = new DChangesetData { Identity = Guid.NewGuid() };
             changesetData.Changes.Add(change);
             changesetData.NewFileBodies.Add(file.Body.Id);
 
             Logger.InfoFormat("Changeset({0}) created", changesetData.Id);
             return changesetData;
+        }
+
+        private bool IsSameFileAdded(DChange change)
+        {
+            var oldFile = change.Old.ActualFileSnapshot.Files.First();
+            var newFile = change.New.ActualFileSnapshot.Files.First();
+            return oldFile.Body.Md5.Equals(newFile.Body.Md5);
         }
 
         private DFileBody CreateFileBody(Stream stream)
