@@ -24,8 +24,8 @@ namespace Ascon.Pilot.SDK.RevitShareAgregator
         private string _sharePath;
         private Dictionary<string, string> _revitProjectAttrsMap;
         private NamedPipeServerStream _updateSettingsPipeServer;
-        private NamedPipeServerStream _pipe;
-        private string _shareFilePathDirectory;
+        private NamedPipeServerStream _prepareProjectPipeServer;
+        private string _shareFilePath;
 
         [ImportingConstructor]
         public RevitShareAgregator(IObjectsRepository repository, IPersonalSettings personalSettings, IEventAggregator eventAggregator)
@@ -37,47 +37,29 @@ namespace Ascon.Pilot.SDK.RevitShareAgregator
             eventAggregator.Subscribe(this);
             _repository.SubscribeNotification(NotificationKind.StorageObjectCreated).Subscribe(OnNext, OnError);
             Task.Factory.StartNew(StartListeningUpdateSettingsCommand);
-            _pipe = new NamedPipeServerStream("PilotRevitAddinPipe", PipeDirection.InOut, 1, PipeTransmissionMode.Message);
-            _pipe.BeginWaitForConnection(new AsyncCallback(WaitForConnectionCallBack), _pipe);
+            Task.Factory.StartNew(StartListeningPrepareProjectCommand);
         }
         public void OnNext(INotification notification)
         {
             Dispatcher.CurrentDispatcher.BeginInvoke(new Action(() => HandleNotification(notification)));
         }
 
-        private void WaitForConnectionCallBack(IAsyncResult arg)
-        {
-            NamedPipeServerStream pipeServer = (NamedPipeServerStream)arg.AsyncState;
-            pipeServer.EndWaitForConnection(arg);
-
-            var _pipeStream = new StreamString(pipeServer);
-            var storageFilePath = _pipeStream.ReadAnswer();
-
-            var filePathWithoutDrive = storageFilePath.Substring(Path.GetPathRoot(storageFilePath).Length);
-            if (_sharePath == null)
-            {
-                MessageBox.Show("Share path is null");
-                return;
-            }
-            _shareFilePathDirectory = Path.Combine(_sharePath, filePathWithoutDrive);
-            var serializedProject = GetSerializedProject(storageFilePath, _shareFilePathDirectory, Guid.Empty);
-            _pipeStream.SendCommand(serializedProject);
-            _pipe.Close();
-            _pipe = new NamedPipeServerStream("PilotRevitAddinPipe", PipeDirection.InOut, 1, PipeTransmissionMode.Message);
-            _pipe.BeginWaitForConnection(new AsyncCallback(WaitForConnectionCallBack), _pipe);
-        }
         private async void HandleNotification(INotification notification)
         {
             var token = new CancellationToken();
             var obj = await _repository.AsyncMethods().GetObjectsAsync(new[] { notification.ObjectId }, CreateNode, token);
             var dataObject = obj.FirstOrDefault();
             var isRvt = dataObject != null && dataObject.ActualFileSnapshot.Files.Any(p => p.Name.Contains(".rvt"));
-            if (!isRvt || string.IsNullOrEmpty(_shareFilePathDirectory))
+            if (!isRvt || string.IsNullOrEmpty(_shareFilePath))
                 return;
             if (!_currentPersonId.Equals(notification.UserId))
                 return;
-            var name = Path.GetFileNameWithoutExtension(dataObject.DisplayName);
-            var iniPath = Path.Combine(_shareFilePathDirectory, name + ".ini");
+
+            var dir = Path.GetDirectoryName(_shareFilePath);
+            if (!Directory.Exists(dir))
+                Directory.CreateDirectory(dir);
+
+            var iniPath = _shareFilePath + ".ini";
             File.WriteAllText(iniPath, dataObject.Id.ToString());
         }
 
@@ -176,7 +158,38 @@ namespace Ascon.Pilot.SDK.RevitShareAgregator
                 PipeOptions.Asynchronous);
             _updateSettingsPipeServer.BeginWaitForConnection(UpdateSettings, null);
         }
+        private void StartListeningPrepareProjectCommand()
+        {
+            _prepareProjectPipeServer = new NamedPipeServerStream("PilotRevitAddinPrepareProjectPipe",
+                PipeDirection.InOut, NamedPipeServerStream.MaxAllowedServerInstances, PipeTransmissionMode.Message,
+                PipeOptions.Asynchronous);
+            _prepareProjectPipeServer.BeginWaitForConnection(PrepareProject, null);
+        }
 
+        private void PrepareProject(IAsyncResult ar)
+        {
+            if (_sharePath == null)
+            {
+                MessageBox.Show("Share path is null. Please set share path in common settings.");
+                return;
+            }
+            //try
+            //{
+                _prepareProjectPipeServer.EndWaitForConnection(ar);
+                var _pipeStream = new StreamString(_prepareProjectPipeServer);
+                var storageFilePath = _pipeStream.ReadAnswer();
+                var filePathWithoutDrive = storageFilePath.Substring(Path.GetPathRoot(storageFilePath).Length);
+                _shareFilePath = Path.Combine(_sharePath, filePathWithoutDrive);
+                var serializedProject = GetSerializedProject(storageFilePath, _shareFilePath, Guid.Empty);
+                _pipeStream.SendCommand(serializedProject);
+
+                _prepareProjectPipeServer.Disconnect();
+                _prepareProjectPipeServer.BeginWaitForConnection(PrepareProject, null);
+            //}
+            //catch (ObjectDisposedException)
+            //{
+            //}
+        }
         private void UpdateSettings(IAsyncResult ar)
         {
             try
@@ -198,6 +211,7 @@ namespace Ascon.Pilot.SDK.RevitShareAgregator
         public void Handle(UnloadedEventArgs message)
         {
             _updateSettingsPipeServer?.Close();
+            _prepareProjectPipeServer?.Close();
         }
 
         private IDataObject CreateNode(IDataObject dataObject)

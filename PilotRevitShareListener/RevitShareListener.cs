@@ -112,6 +112,8 @@ namespace PilotRevitShareListener
 
         private void OnFileSystemChanged(object sender, FileSystemEventArgs e)
         {
+            if (e.ChangeType == WatcherChangeTypes.Created)
+                return;
             _tempFileList.Add(e.FullPath);
 
             _fileWathcerTimer.Stop();

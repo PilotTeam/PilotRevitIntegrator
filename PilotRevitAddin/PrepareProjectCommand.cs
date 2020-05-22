@@ -31,7 +31,7 @@ namespace PilotRevitAddin
                 return Result.Cancelled;
 
             RevitProject revitProject;
-            using (var namedPipeClient = new NamedPipeClientStream(".", "PilotRevitAddinPipe"))
+            using (var namedPipeClient = new NamedPipeClientStream(".", "PilotRevitAddinPrepareProjectPipe"))
             {
                 try
                 {
@@ -41,9 +41,9 @@ namespace PilotRevitAddin
                 {
                     return Result.Failed;
                 }
-                StreamString ss = new StreamString(namedPipeClient);
-                ss.SendCommand(saveFileDialog.FileName);
-                var answer = ss.ReadAnswer();
+                var pipeStream = new StreamString(namedPipeClient);
+                pipeStream.SendCommand(saveFileDialog.FileName);
+                var answer = pipeStream.ReadAnswer();
                 revitProject = JsonConvert.DeserializeObject<RevitProject>(answer);
             }
 
@@ -51,15 +51,16 @@ namespace PilotRevitAddin
             if (shareFilePathDirectory == null)
                 return Result.Failed;
 
-            Directory.CreateDirectory(shareFilePathDirectory);
+            if (!Directory.Exists(shareFilePathDirectory))
+                Directory.CreateDirectory(shareFilePathDirectory);
+
             var savingSettings = new SaveAsOptions() { OverwriteExistingFile = true };
             savingSettings.SetWorksharingOptions(new WorksharingSaveAsOptions() { SaveAsCentral = true });
 
             UpdateProjectSettingsCommand.UpdateProjectInfo(doc, revitProject);
 
             doc.SaveAs(revitProject.CentralModelPath, savingSettings);
-            var pathSaveTo = Path.Combine(revitProject.CentralModelPath, Path.GetFileName(saveFileDialog.FileName));
-            File.Copy(pathSaveTo, saveFileDialog.FileName);
+            File.Copy(revitProject.CentralModelPath, saveFileDialog.FileName);
 
             return Result.Succeeded;
         }
