@@ -59,7 +59,7 @@ namespace PilotRevitShareListener.Server
 
             if (IsSameFileAdded(change))
             {
-                Logger.InfoFormat("Update canceled: same file were added");
+                Logger.InfoFormat("Update canceled: same file was added");
                 return null;
             }
 

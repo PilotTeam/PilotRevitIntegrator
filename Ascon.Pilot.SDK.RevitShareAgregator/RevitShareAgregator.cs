@@ -167,14 +167,14 @@ namespace Ascon.Pilot.SDK.RevitShareAgregator
 
         private void PrepareProject(IAsyncResult ar)
         {
-            if (_sharePath == null)
-            {
-                MessageBox.Show("Share path is null. Please set share path in common settings.");
-                return;
-            }
             try
             {
                 _prepareProjectPipeServer.EndWaitForConnection(ar);
+                if (_sharePath == null)
+                {
+                    MessageBox.Show("Share path is null. Please set share path in common settings.");
+                    return;
+                }
                 var _pipeStream = new StreamString(_prepareProjectPipeServer);
                 var storageFilePath = _pipeStream.ReadAnswer();
                 var filePathWithoutDrive = storageFilePath.Substring(Path.GetPathRoot(storageFilePath).Length);
