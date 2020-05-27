@@ -24,6 +24,8 @@ namespace Ascon.Pilot.SDK.RevitShareAgregator
         private string _sharePath;
         private Dictionary<string, string> _revitProjectAttrsMap;
         private NamedPipeServerStream _updateSettingsPipeServer;
+        private NamedPipeServerStream _prepareProjectPipeServer;
+        private string _shareFilePath;
 
         [ImportingConstructor]
         public RevitShareAgregator(IObjectsRepository repository, IPersonalSettings personalSettings, IEventAggregator eventAggregator)
@@ -35,10 +37,8 @@ namespace Ascon.Pilot.SDK.RevitShareAgregator
             eventAggregator.Subscribe(this);
             _repository.SubscribeNotification(NotificationKind.StorageObjectCreated).Subscribe(OnNext, OnError);
             Task.Factory.StartNew(StartListeningUpdateSettingsCommand);
+            Task.Factory.StartNew(StartListeningPrepareProjectCommand);
         }
-
-        
-
         public void OnNext(INotification notification)
         {
             Dispatcher.CurrentDispatcher.BeginInvoke(new Action(() => HandleNotification(notification)));
@@ -50,36 +50,19 @@ namespace Ascon.Pilot.SDK.RevitShareAgregator
             var obj = await _repository.AsyncMethods().GetObjectsAsync(new[] { notification.ObjectId }, CreateNode, token);
             var dataObject = obj.FirstOrDefault();
             var isRvt = dataObject != null && dataObject.ActualFileSnapshot.Files.Any(p => p.Name.Contains(".rvt"));
-            if (!isRvt)
+            if (!isRvt || string.IsNullOrEmpty(_shareFilePath))
                 return;
-
             if (!_currentPersonId.Equals(notification.UserId))
                 return;
 
-            var storageFilePath = _repository.GetStoragePath(dataObject.Id);
-            var filePathWithoutDrive = storageFilePath.Substring(Path.GetPathRoot(storageFilePath).Length);
-            if (_sharePath == null)
-            {
-                MessageBox.Show("Share path is null");
-                return;
-            }
-            var serializedProject = GetSerializedProject(storageFilePath, Path.Combine(_sharePath, filePathWithoutDrive), dataObject.Id);
+            var dir = Path.GetDirectoryName(_shareFilePath);
+            if (!Directory.Exists(dir))
+                Directory.CreateDirectory(dir);
 
-            using (var namedPipeClient = new NamedPipeClientStream(".", "PilotRevitAddinPipe"))
-            {
-                try
-                {
-                    namedPipeClient.Connect(10000);
-                }
-                catch (TimeoutException)
-                {
-                    return;
-                }
-                var messageBytes = Encoding.UTF8.GetBytes(serializedProject);
-                namedPipeClient.Write(messageBytes, 0, messageBytes.Length);
-            }
+            var iniPath = _shareFilePath + ".ini";
+            File.WriteAllText(iniPath, dataObject.Id.ToString());
         }
-       
+
         private void HandleRevitRequest(NamedPipeServerStream namedPipeServer, string modelPath)
         {
             var iniPath = modelPath + ".ini";
@@ -91,13 +74,13 @@ namespace Ascon.Pilot.SDK.RevitShareAgregator
                 objId = new Guid(line);
             }
             
-            var serialisedProject = GetSerializedProject(_repository.GetStoragePath(objId), modelPath, objId);
+            var serialisedProject = GetSerializedProject(_repository.GetStoragePath(objId), modelPath);
             var messageBytes = Encoding.UTF8.GetBytes(serialisedProject);
             namedPipeServer.Write(messageBytes, 0, messageBytes.Length);
         }
 
 
-        private string GetSerializedProject(string storageFilePath, string centralModelPath, Guid objId)
+        private string GetSerializedProject(string storageFilePath, string centralModelPath)
         {
             var project = GetProject(storageFilePath);
             var projectAttributes = project.DataObject.Attributes;
@@ -118,7 +101,6 @@ namespace Ascon.Pilot.SDK.RevitShareAgregator
             var revitProject = new RevitProject()
             {
                 CentralModelPath = centralModelPath,
-                PilotObjectId = objId.ToString(),
                 ProjectInfoAttrsMap = revitattrsMap
             };
 
@@ -175,7 +157,38 @@ namespace Ascon.Pilot.SDK.RevitShareAgregator
                 PipeOptions.Asynchronous);
             _updateSettingsPipeServer.BeginWaitForConnection(UpdateSettings, null);
         }
+        private void StartListeningPrepareProjectCommand()
+        {
+            _prepareProjectPipeServer = new NamedPipeServerStream("PilotRevitAddinPrepareProjectPipe",
+                PipeDirection.InOut, NamedPipeServerStream.MaxAllowedServerInstances, PipeTransmissionMode.Message,
+                PipeOptions.Asynchronous);
+            _prepareProjectPipeServer.BeginWaitForConnection(PrepareProject, null);
+        }
 
+        private void PrepareProject(IAsyncResult ar)
+        {
+            try
+            {
+                _prepareProjectPipeServer.EndWaitForConnection(ar);
+                if (_sharePath == null)
+                {
+                    MessageBox.Show("Share path is null. Please set share path in common settings.");
+                    return;
+                }
+                var _pipeStream = new StreamString(_prepareProjectPipeServer);
+                var storageFilePath = _pipeStream.ReadAnswer();
+                var filePathWithoutDrive = storageFilePath.Substring(Path.GetPathRoot(storageFilePath).Length);
+                _shareFilePath = Path.Combine(_sharePath, filePathWithoutDrive);
+                var serializedProject = GetSerializedProject(storageFilePath, _shareFilePath);
+                _pipeStream.SendCommand(serializedProject);
+
+                _prepareProjectPipeServer.Disconnect();
+                _prepareProjectPipeServer.BeginWaitForConnection(PrepareProject, null);
+            }
+            catch (ObjectDisposedException)
+            {
+            }
+        }
         private void UpdateSettings(IAsyncResult ar)
         {
             try
@@ -197,6 +210,7 @@ namespace Ascon.Pilot.SDK.RevitShareAgregator
         public void Handle(UnloadedEventArgs message)
         {
             _updateSettingsPipeServer?.Close();
+            _prepareProjectPipeServer?.Close();
         }
 
         private IDataObject CreateNode(IDataObject dataObject)
