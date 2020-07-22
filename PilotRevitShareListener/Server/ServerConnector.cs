@@ -8,7 +8,7 @@ namespace PilotRevitShareListener.Server
     {
         IServerApi ServerApi { get; }
         IFileArchiveApi FileArchiveApi { get; }
-        void Connect();
+        void Connect(IConnectionLostListener listener);
         void Disconnect();
         int PersonId { get; }
     }
@@ -28,10 +28,11 @@ namespace PilotRevitShareListener.Server
             _settings = settings;
         }
 
-        public void Connect()
+        public void Connect(IConnectionLostListener listener)
         {
             _client = new HttpPilotClient(_settings.ServerUrl);
             _client.Connect(false);
+            _client.SetConnectionLostListener(listener);
 
             ServerApi = _client.GetServerApi(new NullableServerCallback());
             AuthenticationApi = _client.GetAuthenticationApi();
@@ -46,6 +47,7 @@ namespace PilotRevitShareListener.Server
         public void Disconnect()
         {
             _client?.Disconnect();
+            _client?.Dispose();
         }
     }
 }

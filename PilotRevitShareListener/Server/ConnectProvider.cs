@@ -1,19 +1,23 @@
 ﻿using System;
+using System.Threading;
 using log4net;
 using Ascon.Pilot.SharedProject;
 using Ascon.Pilot.Common;
+using Ascon.Pilot.Server.Api;
 
 namespace PilotRevitShareListener.Server
 {
-    public class ConnectProvider
+    public class ConnectProvider : IConnectionLostListener
     {
         private readonly ILog _logger;
+        private readonly object _lock;
         private IServerConnector _serverConnector;
         private Settings _settings;
         private bool _isConnected;
 
         public ConnectProvider(ILog logger , Settings settings, IServerConnector serverConnector)
         {
+            _lock = new object();
             _logger = logger;
             _settings = settings;
             _serverConnector = serverConnector;
@@ -22,9 +26,23 @@ namespace PilotRevitShareListener.Server
 
         public string ExceptionMessage { get; private set;}
 
-        public bool CheckConnection()
+        public bool IsConnected
         {
-            return _isConnected;
+            get
+            {
+                lock (_lock)
+                {
+                    return _isConnected;
+                }
+
+            }
+            private set
+            {
+                lock (_lock)
+                {
+                    _isConnected = value;
+                }
+            }
         }
 
         public bool Reconnect(PipeCommand command)
@@ -69,19 +87,24 @@ namespace PilotRevitShareListener.Server
 
         public void Disconnect()
         {
-            if (!_isConnected)
+            if (!IsConnected)
                 return;
 
             _serverConnector.Disconnect();
-            _isConnected = false;
+            IsConnected = false;
             _logger.InfoFormat("disconnected to server");
         }
 
         public void Connect()
         {
-            _serverConnector.Connect();
-            _isConnected = true;
+            _serverConnector.Connect(this);
+            IsConnected = true;
             _logger.InfoFormat("connected to server");
+        }
+
+        public void ConnectionLost(Exception ex = null)
+        {
+            IsConnected = false;
         }
 
         private string[] SplitUrl(string url)
@@ -98,6 +121,5 @@ namespace PilotRevitShareListener.Server
             subs[1] = url.Remove(0, subs[0].Length + 1);
             return subs;
         }
-
     }
 }

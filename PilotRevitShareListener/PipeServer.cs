@@ -125,7 +125,7 @@ namespace PilotRevitShareListener
 
         private string Disconnect()
         {
-            if (!_reconnectProvider.CheckConnection())
+            if (!_reconnectProvider.IsConnected)
                 return "already disconnected";
             _reconnectProvider.Disconnect();
             return "disconnected to server";
@@ -158,7 +158,7 @@ namespace PilotRevitShareListener
 
         private string CheckConnection()
         {
-            if (_reconnectProvider.CheckConnection())
+            if (_reconnectProvider.IsConnected)
                 return "connected to " + _settings.ServerUrl + "/" + _settings.DbName;
             else
                 return "disconnected to server";
