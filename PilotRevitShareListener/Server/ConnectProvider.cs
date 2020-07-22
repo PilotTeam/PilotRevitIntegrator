@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading;
+using System.Threading.Tasks;
 using log4net;
 using Ascon.Pilot.SharedProject;
 using Ascon.Pilot.Common;
@@ -14,6 +15,7 @@ namespace PilotRevitShareListener.Server
         private IServerConnector _serverConnector;
         private Settings _settings;
         private bool _isConnected;
+        private int _reconnectTimeOut = 15000;
 
         public ConnectProvider(ILog logger , Settings settings, IServerConnector serverConnector)
         {
@@ -45,7 +47,7 @@ namespace PilotRevitShareListener.Server
             }
         }
 
-        public bool Reconnect(PipeCommand command)
+        public async Task<bool> ReconnectAsync(PipeCommand command)
         {
             object[] dataBuffer = new object[] { _settings.ServerUrl, _settings.DbName, _settings.Login, _settings.Password };
             string[] subs = SplitUrl(command.args["url"]);
@@ -59,7 +61,8 @@ namespace PilotRevitShareListener.Server
             _settings.Login = command.args["login"];
             _settings.Password = command.args["password"].EncryptAes();
 
-            if (!Reconnect())
+            var result = await ReconnectAsync();
+            if (!result)
             { 
                 _settings.ServerUrl = (string)dataBuffer[0];
                 _settings.DbName = (string)dataBuffer[1];
@@ -70,12 +73,12 @@ namespace PilotRevitShareListener.Server
             return true;
         }
 
-        public bool Reconnect()
+        public async Task<bool> ReconnectAsync()
         {
             try
             {
                 Disconnect();
-                Connect();
+                await ConnectAsync();
                 return true;
             }catch(Exception ex)
             {
@@ -95,9 +98,9 @@ namespace PilotRevitShareListener.Server
             _logger.InfoFormat("disconnected to server");
         }
 
-        public void Connect()
+        public async Task ConnectAsync()
         {
-            _serverConnector.Connect(this);
+            await ActionQueue.EnqueueAsync(() =>_serverConnector.Connect(this));
             IsConnected = true;
             _logger.InfoFormat("connected to server");
         }
@@ -105,6 +108,24 @@ namespace PilotRevitShareListener.Server
         public void ConnectionLost(Exception ex = null)
         {
             IsConnected = false;
+            _serverConnector.Disconnect();
+            TryConnectAsync();
+        }
+
+        public async Task TryConnectAsync()
+        {
+            while (!IsConnected)
+            {
+                try
+                {
+                    await ConnectAsync();
+                }
+                catch (Exception)
+                {
+                    _logger.InfoFormat("failed to connect to the server");
+                    Thread.Sleep(_reconnectTimeOut);
+                }
+            }
         }
 
         private string[] SplitUrl(string url)

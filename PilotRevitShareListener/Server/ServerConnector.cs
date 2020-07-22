@@ -46,8 +46,8 @@ namespace PilotRevitShareListener.Server
 
         public void Disconnect()
         {
-            _client?.Disconnect();
             _client?.Dispose();
+            _client?.Disconnect();
         }
     }
 }

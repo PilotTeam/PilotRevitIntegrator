@@ -5,6 +5,7 @@ using System.IO.Pipes;
 using System.Threading;
 using System.Security.AccessControl;
 using System.Security.Principal;
+using System.Threading.Tasks;
 using PilotRevitShareListener.Server;
 using Ascon.Pilot.Common;
 using Ascon.Pilot.SharedProject;
@@ -65,7 +66,7 @@ namespace PilotRevitShareListener
             }
         }
 
-        private void WaitForConnectionCallBack(IAsyncResult iar)
+        private async void WaitForConnectionCallBack(IAsyncResult iar)
         {
             _logger.InfoFormat("Pipe connection callback");
             NamedPipeServerStream pipeServer = (NamedPipeServerStream)iar.AsyncState;
@@ -87,7 +88,7 @@ namespace PilotRevitShareListener
                     SendToAdminClient("license code is " + _settings.LicenseCode);
                     break;
                 case "--setLicenseCode":
-                    result =  SetLicenseCode(command);
+                    result = await SetLicenseCodeAsync(command);
                     SendToAdminClient(result);
                     break;
                 case "--getPath":
@@ -114,7 +115,7 @@ namespace PilotRevitShareListener
                     SendToAdminClient(result);
                     break;
                 case "--connect":
-                    result = Connect(command);
+                    result = await ConnectAsync(command);
                     SendToAdminClient(result);
                     break;
                 default:
@@ -131,23 +132,22 @@ namespace PilotRevitShareListener
             return "disconnected to server";
         }
 
-        private string Connect(PipeCommand command)
+        private async Task<string> ConnectAsync(PipeCommand command)
         {
             if (_settings.SharePath == "")
                 return "Revit shared folder path is not set";
 
-            if(_reconnectProvider.Reconnect(command))
+            var result = await _reconnectProvider.ReconnectAsync(command);
+            if (result)
             { 
                  if(_revitShareListener == null)
                     CreateNewListener();
                 _readerWriter.Write();
                 return "connection is successful";
             }
-            else
-            {
-                _logger.InfoFormat("connection failed: " + _reconnectProvider.ExceptionMessage);
-                return "connection failed: " + _reconnectProvider.ExceptionMessage;
-            }
+
+            _logger.InfoFormat("connection failed: " + _reconnectProvider.ExceptionMessage);
+            return "connection failed: " + _reconnectProvider.ExceptionMessage;
         }
 
         private void CreateNewListener()
@@ -207,7 +207,7 @@ namespace PilotRevitShareListener
                 return "Revit shared folder path is not set";
         }
 
-        private string SetLicenseCode(PipeCommand command)
+        private async Task<string> SetLicenseCodeAsync(PipeCommand command)
         {
             int codeBuffer = _settings.LicenseCode;
             try
@@ -220,7 +220,8 @@ namespace PilotRevitShareListener
                 return "failed: " + ex.Message;
             }
             _readerWriter.Write();
-            if (_reconnectProvider.Reconnect())
+            var result = await _reconnectProvider.ReconnectAsync();
+            if (result)
             {
                 _readerWriter.Write();
                 _logger.InfoFormat("license code successfully changed");
