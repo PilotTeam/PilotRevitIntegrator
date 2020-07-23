@@ -49,43 +49,12 @@ namespace PilotRevitShareListener.Server
 
         public async Task<bool> ReconnectAsync(PipeCommand command)
         {
-            object[] dataBuffer = new object[] { _settings.ServerUrl, _settings.DbName, _settings.Login, _settings.Password };
-            string[] subs = SplitUrl(command.args["url"]);
-            if (subs == null)
-            {
-                subs = new string[] { command.args["url"], "" }; //if database name wasn't typed
-            }
-            
-            _settings.ServerUrl = subs[0];
-            _settings.DbName = subs[1];
-            _settings.Login = command.args["login"];
-            _settings.Password = command.args["password"].EncryptAes();
-
-            var result = await ReconnectAsync();
-            if (!result)
-            { 
-                _settings.ServerUrl = (string)dataBuffer[0];
-                _settings.DbName = (string)dataBuffer[1];
-                _settings.Login = (string)dataBuffer[2];
-                _settings.Password = (string)dataBuffer[3];
-                return false;
-            }
-            return true;
+            return await ActionQueue.EnqueueAsync(() => Reconnect(command));
         }
 
         public async Task<bool> ReconnectAsync()
         {
-            try
-            {
-                Disconnect();
-                await ConnectAsync();
-                return true;
-            }catch(Exception ex)
-            {
-                _logger.InfoFormat("ex.Message");
-                ExceptionMessage = ex.Message;
-                return false;
-            }
+            return await ActionQueue.EnqueueAsync(Reconnect);
         }
 
         public void Disconnect()
@@ -100,9 +69,7 @@ namespace PilotRevitShareListener.Server
 
         public async Task ConnectAsync()
         {
-            await ActionQueue.EnqueueAsync(() =>_serverConnector.Connect(this));
-            IsConnected = true;
-            _logger.InfoFormat("connected to server");
+            await ActionQueue.EnqueueAsync(Connect);
         }
 
         public void ConnectionLost(Exception ex = null)
@@ -114,6 +81,7 @@ namespace PilotRevitShareListener.Server
 
         public async Task TryConnectAsync()
         {
+            bool firstTry = true;
             while (!IsConnected)
             {
                 try
@@ -122,10 +90,61 @@ namespace PilotRevitShareListener.Server
                 }
                 catch (Exception)
                 {
-                    _logger.InfoFormat("failed to connect to the server");
+                    if (firstTry)
+                    {
+                        _logger.InfoFormat("failed to connect to the server");
+                        firstTry = false;
+                    }
                     Thread.Sleep(_reconnectTimeOut);
                 }
             }
+        }
+
+        private bool Reconnect(PipeCommand command)
+        {
+            object[] dataBuffer = new object[] { _settings.ServerUrl, _settings.DbName, _settings.Login, _settings.Password };
+            string[] subs = SplitUrl(command.args["url"]);
+            if (subs == null)
+            {
+                subs = new string[] { command.args["url"], "" }; //if database name wasn't typed
+            }
+
+            _settings.ServerUrl = subs[0];
+            _settings.DbName = subs[1];
+            _settings.Login = command.args["login"];
+            _settings.Password = command.args["password"].EncryptAes();
+
+            if (!Reconnect())
+            {
+                _settings.ServerUrl = (string)dataBuffer[0];
+                _settings.DbName = (string)dataBuffer[1];
+                _settings.Login = (string)dataBuffer[2];
+                _settings.Password = (string)dataBuffer[3];
+                return false;
+            }
+            return true;
+        }
+        private bool Reconnect()
+        {
+            try
+            {
+                Disconnect();
+                Connect();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _logger.InfoFormat(ex.Message);
+                ExceptionMessage = ex.Message;
+                return false;
+            }
+        }
+
+        private void Connect()
+        {
+            _serverConnector.Connect(this);
+            IsConnected = true;
+            _logger.InfoFormat("connected to server");
         }
 
         private string[] SplitUrl(string url)

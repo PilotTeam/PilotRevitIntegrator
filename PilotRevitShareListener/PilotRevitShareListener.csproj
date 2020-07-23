@@ -198,7 +198,7 @@
     <Compile Include="RevitShareListener.cs" />
     <Compile Include="Server\ConnectProvider.cs" />
     <Compile Include="Server\ServerConnector.cs" />
-    <Compile Include="Server\TaskQueue.cs" />
+    <Compile Include="Server\ActionQueue.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="ShareListenerService.cs">
       <SubType>Component</SubType>

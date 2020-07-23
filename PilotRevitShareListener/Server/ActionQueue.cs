@@ -22,5 +22,18 @@ namespace PilotRevitShareListener.Server
                 semaphore.Release();
             }
         }
+
+        public static async Task<T> EnqueueAsync<T>(Func<T> action)
+        {
+            await semaphore.WaitAsync();
+            try
+            {
+                return await Task.Run<T>(action);
+            }
+            finally
+            {
+                semaphore.Release();
+            }
+        }
     }
 }

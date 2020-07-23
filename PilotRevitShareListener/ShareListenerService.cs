@@ -37,13 +37,13 @@ namespace PilotRevitShareListener
                 _objectUploader = new ObjectUploader( objectModifier, _serverConnector);
 
                 _connectProvider = new ConnectProvider(_logger, _settings, _serverConnector);
-                await _connectProvider.ConnectAsync();
 
                 _revitShareListener = new RevitShareListener(_objectUploader, _settings);
                 
                 _pipeServer = new PipeServer(_logger, readerWriter,_connectProvider,_objectUploader, _revitShareListener);
                 _pipeServer.Start();
 
+                await _connectProvider.TryConnectAsync();
                 _logger.InfoFormat("{0} Started Successfully", ServiceName);
             }
             catch (Exception)//in case of incorrect settings.xml 

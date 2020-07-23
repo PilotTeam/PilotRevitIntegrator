@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using System.Threading;
 using Ascon.Pilot.Server.Api;
 using Ascon.Pilot.Server.Api.Contracts;
 
@@ -47,7 +48,7 @@ namespace PilotRevitShareListener.Server
         public void Disconnect()
         {
             _client?.Dispose();
-            _client?.Disconnect();
+            _client?.BreakConnection();
         }
     }
 }
