@@ -8,6 +8,7 @@ using Microsoft.Win32;
 using Newtonsoft.Json;
 using Ascon.Pilot.SharedProject;
 using System;
+using Microsoft.WindowsAPICodePack.Dialogs;
 
 namespace PilotRevitAddin
 {
@@ -21,13 +22,13 @@ namespace PilotRevitAddin
             var uiApp = commandData.Application;
             var doc = uiApp.ActiveUIDocument.Document;
 
-            var saveFileDialog = new SaveFileDialog
-            {
-                Filter = "Revit file (*.rvt)|*.rvt",
-                FileName = doc.Title
-            };
+            var saveFileDialog = new CommonSaveFileDialog();
+            saveFileDialog.DefaultFileName = doc.Title;
+            saveFileDialog.DefaultExtension = "rvt";
+            saveFileDialog.AlwaysAppendDefaultExtension = true;
+            saveFileDialog.Filters.Add(new CommonFileDialogFilter("Revit file", "*.rvt"));
 
-            if (saveFileDialog.ShowDialog() != true)
+            if (saveFileDialog.ShowDialog() != CommonFileDialogResult.Ok)
                 return Result.Cancelled;
 
             RevitProject revitProject;
