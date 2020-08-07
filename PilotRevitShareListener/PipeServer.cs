@@ -88,7 +88,7 @@ namespace PilotRevitShareListener
                     SendToAdminClient("license code is " + _settings.LicenseCode);
                     break;
                 case "--setLicenseCode":
-                    result = await SetLicenseCodeAsync(command);
+                    result = SetLicenseCode(command);
                     SendToAdminClient(result);
                     break;
                 case "--getPath":
@@ -115,7 +115,7 @@ namespace PilotRevitShareListener
                     SendToAdminClient(result);
                     break;
                 case "--connect":
-                    result = await ConnectAsync(command);
+                    result = Connect(command);
                     SendToAdminClient(result);
                     break;
                 default:
@@ -132,12 +132,12 @@ namespace PilotRevitShareListener
             return "disconnected to server";
         }
 
-        private async Task<string> ConnectAsync(PipeCommand command)
+        private string Connect(PipeCommand command)
         {
             if (_settings.SharePath == "")
                 return "Revit shared folder path is not set";
 
-            var result = await _reconnectProvider.ReconnectAsync(command);
+            var result = _reconnectProvider.Reconnect(command);
             if (result)
             { 
                  if(_revitShareListener == null)
@@ -207,7 +207,7 @@ namespace PilotRevitShareListener
                 return "Revit shared folder path is not set";
         }
 
-        private async Task<string> SetLicenseCodeAsync(PipeCommand command)
+        private string SetLicenseCode(PipeCommand command)
         {
             int codeBuffer = _settings.LicenseCode;
             try
@@ -220,7 +220,7 @@ namespace PilotRevitShareListener
                 return "failed: " + ex.Message;
             }
             _readerWriter.Write();
-            var result = await _reconnectProvider.ReconnectAsync();
+            var result = _reconnectProvider.Reconnect();
             if (result)
             {
                 _readerWriter.Write();

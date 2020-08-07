@@ -43,7 +43,7 @@ namespace PilotRevitShareListener
                 _pipeServer = new PipeServer(_logger, readerWriter,_connectProvider,_objectUploader, _revitShareListener);
                 _pipeServer.Start();
 
-                await _connectProvider.TryConnectAsync();
+                _connectProvider.TryConnect();
                 _logger.InfoFormat("{0} Started Successfully", ServiceName);
             }
             catch (Exception)//in case of incorrect settings.xml 

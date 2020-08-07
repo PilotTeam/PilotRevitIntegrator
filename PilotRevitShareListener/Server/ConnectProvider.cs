@@ -47,16 +47,6 @@ namespace PilotRevitShareListener.Server
             }
         }
 
-        public async Task<bool> ReconnectAsync(PipeCommand command)
-        {
-            return await ActionQueue.EnqueueAsync(() => Reconnect(command));
-        }
-
-        public async Task<bool> ReconnectAsync()
-        {
-            return await ActionQueue.EnqueueAsync(Reconnect);
-        }
-
         public void Disconnect()
         {
             if (!IsConnected)
@@ -67,26 +57,29 @@ namespace PilotRevitShareListener.Server
             _logger.InfoFormat("disconnected to server");
         }
 
-        public async Task ConnectAsync()
-        {
-            await ActionQueue.EnqueueAsync(Connect);
-        }
-
         public void ConnectionLost(Exception ex = null)
         {
             IsConnected = false;
             _serverConnector.Disconnect();
-            TryConnectAsync();
+            TryConnect();
         }
 
-        public async Task TryConnectAsync()
+        public void Connect()
+        {
+            _serverConnector.Connect(this);
+            IsConnected = true;
+            _logger.InfoFormat("connected to server");
+        }
+
+
+        public void TryConnect()
         {
             bool firstTry = true;
             while (!IsConnected)
             {
                 try
                 {
-                    await ConnectAsync();
+                    Connect();
                 }
                 catch (Exception)
                 {
@@ -100,7 +93,7 @@ namespace PilotRevitShareListener.Server
             }
         }
 
-        private bool Reconnect(PipeCommand command)
+        public bool Reconnect(PipeCommand command)
         {
             object[] dataBuffer = new object[] { _settings.ServerUrl, _settings.DbName, _settings.Login, _settings.Password };
             string[] subs = SplitUrl(command.args["url"]);
@@ -124,7 +117,7 @@ namespace PilotRevitShareListener.Server
             }
             return true;
         }
-        private bool Reconnect()
+        public bool Reconnect()
         {
             try
             {
@@ -138,13 +131,6 @@ namespace PilotRevitShareListener.Server
                 ExceptionMessage = ex.Message;
                 return false;
             }
-        }
-
-        private void Connect()
-        {
-            _serverConnector.Connect(this);
-            IsConnected = true;
-            _logger.InfoFormat("connected to server");
         }
 
         private string[] SplitUrl(string url)
