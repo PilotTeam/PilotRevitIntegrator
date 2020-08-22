@@ -7,6 +7,7 @@ namespace PilotRevitShareListener
 {
     public class ReaderWriter
     {
+        private object _locker = new object();
         private const string SETTINGS_NAME = "settings.xml";
         private readonly string _serviceName;
 
@@ -20,14 +21,17 @@ namespace PilotRevitShareListener
 
         public void Write()
         {
-            Settings.Password = Settings.Password.DecryptAes();
-            var serializer = new XmlSerializer(typeof(Settings));
-            Stream fStram = new FileStream(GetSettingsPath(), FileMode.Create, FileAccess.Write, FileShare.None);
-            var writer = new StreamWriter(fStram);
-            serializer.Serialize(writer, Settings);
-            writer.Close();
-            fStram.Close();
-            Settings.Password = Settings.Password.EncryptAes();
+            lock (_locker)
+            {
+                Settings.Password = Settings.Password.DecryptAes();
+                var serializer = new XmlSerializer(typeof(Settings));
+                Stream fStram = new FileStream(GetSettingsPath(), FileMode.Create, FileAccess.Write, FileShare.None);
+                var writer = new StreamWriter(fStram);
+                serializer.Serialize(writer, Settings);
+                writer.Close();
+                fStram.Close();
+                Settings.Password = Settings.Password.EncryptAes();
+            }
         }
         public Settings Read()
         {

@@ -1,19 +1,25 @@
 ﻿using System;
+using System.Threading;
+using System.Threading.Tasks;
 using log4net;
 using Ascon.Pilot.SharedProject;
 using Ascon.Pilot.Common;
+using Ascon.Pilot.Server.Api;
 
 namespace PilotRevitShareListener.Server
 {
-    public class ConnectProvider
+    public class ConnectProvider : IConnectionLostListener
     {
         private readonly ILog _logger;
+        private readonly object _lock;
         private IServerConnector _serverConnector;
         private Settings _settings;
         private bool _isConnected;
+        private int _reconnectTimeOut = 15000;
 
         public ConnectProvider(ILog logger , Settings settings, IServerConnector serverConnector)
         {
+            _lock = new object();
             _logger = logger;
             _settings = settings;
             _serverConnector = serverConnector;
@@ -22,9 +28,69 @@ namespace PilotRevitShareListener.Server
 
         public string ExceptionMessage { get; private set;}
 
-        public bool CheckConnection()
+        public bool IsConnected
         {
-            return _isConnected;
+            get
+            {
+                lock (_lock)
+                {
+                    return _isConnected;
+                }
+
+            }
+            private set
+            {
+                lock (_lock)
+                {
+                    _isConnected = value;
+                }
+            }
+        }
+
+        public void Disconnect()
+        {
+            if (!IsConnected)
+                return;
+
+            _serverConnector.Disconnect();
+            IsConnected = false;
+            _logger.InfoFormat("disconnected to server");
+        }
+
+        public void ConnectionLost(Exception ex = null)
+        {
+            IsConnected = false;
+            _serverConnector.Disconnect();
+            TryConnect();
+        }
+
+        public void Connect()
+        {
+            _serverConnector.Connect(this);
+            IsConnected = true;
+            _logger.InfoFormat("connected to server");
+        }
+
+
+        public void TryConnect()
+        {
+            bool firstTry = true;
+            while (!IsConnected)
+            {
+                try
+                {
+                    Connect();
+                }
+                catch (Exception)
+                {
+                    if (firstTry)
+                    {
+                        _logger.InfoFormat("failed to connect to the server");
+                        firstTry = false;
+                    }
+                    Thread.Sleep(_reconnectTimeOut);
+                }
+            }
         }
 
         public bool Reconnect(PipeCommand command)
@@ -35,14 +101,14 @@ namespace PilotRevitShareListener.Server
             {
                 subs = new string[] { command.args["url"], "" }; //if database name wasn't typed
             }
-            
+
             _settings.ServerUrl = subs[0];
             _settings.DbName = subs[1];
             _settings.Login = command.args["login"];
             _settings.Password = command.args["password"].EncryptAes();
 
             if (!Reconnect())
-            { 
+            {
                 _settings.ServerUrl = (string)dataBuffer[0];
                 _settings.DbName = (string)dataBuffer[1];
                 _settings.Login = (string)dataBuffer[2];
@@ -51,7 +117,6 @@ namespace PilotRevitShareListener.Server
             }
             return true;
         }
-
         public bool Reconnect()
         {
             try
@@ -59,29 +124,13 @@ namespace PilotRevitShareListener.Server
                 Disconnect();
                 Connect();
                 return true;
-            }catch(Exception ex)
+            }
+            catch (Exception ex)
             {
-                _logger.InfoFormat("ex.Message");
+                _logger.InfoFormat(ex.Message);
                 ExceptionMessage = ex.Message;
                 return false;
             }
-        }
-
-        public void Disconnect()
-        {
-            if (!_isConnected)
-                return;
-
-            _serverConnector.Disconnect();
-            _isConnected = false;
-            _logger.InfoFormat("disconnected to server");
-        }
-
-        public void Connect()
-        {
-            _serverConnector.Connect();
-            _isConnected = true;
-            _logger.InfoFormat("connected to server");
         }
 
         private string[] SplitUrl(string url)
@@ -98,6 +147,5 @@ namespace PilotRevitShareListener.Server
             subs[1] = url.Remove(0, subs[0].Length + 1);
             return subs;
         }
-
     }
 }

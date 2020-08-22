@@ -24,7 +24,7 @@ namespace PilotRevitShareListener
             InitializeComponent();
         }
 
-        public void Start(ILog logger)
+        public async void Start(ILog logger)
         {
             _logger = logger;
             ReaderWriter readerWriter = new ReaderWriter(ServiceName);
@@ -37,13 +37,13 @@ namespace PilotRevitShareListener
                 _objectUploader = new ObjectUploader( objectModifier, _serverConnector);
 
                 _connectProvider = new ConnectProvider(_logger, _settings, _serverConnector);
-                _connectProvider.Connect();
 
                 _revitShareListener = new RevitShareListener(_objectUploader, _settings);
                 
                 _pipeServer = new PipeServer(_logger, readerWriter,_connectProvider,_objectUploader, _revitShareListener);
                 _pipeServer.Start();
 
+                _connectProvider.TryConnect();
                 _logger.InfoFormat("{0} Started Successfully", ServiceName);
             }
             catch (Exception)//in case of incorrect settings.xml 
