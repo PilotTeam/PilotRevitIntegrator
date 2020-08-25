@@ -1,0 +1,36 @@
+name: PilotRevitIntegrator
+env:
+ ADMINISTATOR: "Ascon.Pilot.RevitShareListener.Administrator"
+ REVIT_ADDIN: "PilotRevitAddin"
+ REVIT_SHARE_LISTENER: "PilotRevitShareListener"
+ REVIT_SHARE_LISTENER_CONSOLE:  "PilotRevitShareListener.Console"
+ REVIT_SHARE_AGREGATOR: "Ascon.Pilot.SDK.RevitShareAgregator"
+
+on:
+  push:
+    branches: [ master ]
+
+jobs:
+  build:
+
+    runs-on: windows-latest
+
+    steps:
+    - uses: actions/checkout@v1
+    - name: Setup Nuget.exe
+      uses: warrenbuckley/Setup-Nuget@v1
+    - name: Restore packages
+      run: nuget restore NetFramworkCI.sln
+    - name: Setup MSBuild.exe
+      uses: warrenbuckley/Setup-MSBuild@v1
+    - name: Build with MSBuild
+      run: msbuild  NetFramworkCI.sln -p:Configuration=Release
+    - uses: actions/upload-artifact@v2
+      with:
+       name: my-artifact
+       path: |
+        ${{ github.workspace }}\env.REVIT_SHARE_AGREGATOR\bin\Release\
+        ${{ github.workspace }}\env.REVIT_ADDIN\bin\Release
+        ${{ github.workspace }}\env.REVIT_SHARE_LISTENER\bin\Release
+        ${{ github.workspace }}\env.REVIT_SHARE_LISTENER_CONSOLE\bin\Release
+        ${{ github.workspace }}\env.ADMINISTATOR\bin\Release
