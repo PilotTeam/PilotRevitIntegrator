@@ -62,7 +62,6 @@ jobs:
        mkdir ${{ env.RELESE_FOLDER }}\Installer
        move ${{ env.INSTALLERX64 }} ${{ env.RELESE_FOLDER }}\Installer
        move ${{ env.INSTALLERX86 }} ${{ env.RELESE_FOLDER }}\Installer
-      shell: cmd
     - name: Zip binaries
       run: |
           cd ${{ env.RELESE_FOLDER }}
