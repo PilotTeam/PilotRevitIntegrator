@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.28307.572
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30002.166
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{930C7802-8A8C-48F9-8165-68863BCCD9DD}") = "Pilot-RvtShareListener_x64", "Pilot-RvtShareListener_x64\Pilot-RvtShareListener_x64.wixproj", "{2359DAF7-9E03-47AF-8E26-2CF45ACC9ED2}"
 EndProject
@@ -15,14 +15,15 @@ Global
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{2359DAF7-9E03-47AF-8E26-2CF45ACC9ED2}.Debug|x64.ActiveCfg = Debug|x64
+		{2359DAF7-9E03-47AF-8E26-2CF45ACC9ED2}.Debug|x64.ActiveCfg = Release|x64
+		{2359DAF7-9E03-47AF-8E26-2CF45ACC9ED2}.Debug|x64.Build.0 = Release|x64
 		{2359DAF7-9E03-47AF-8E26-2CF45ACC9ED2}.Debug|x86.ActiveCfg = Debug|x86
 		{2359DAF7-9E03-47AF-8E26-2CF45ACC9ED2}.Debug|x86.Build.0 = Debug|x86
 		{2359DAF7-9E03-47AF-8E26-2CF45ACC9ED2}.Release|x64.ActiveCfg = Debug|x64
 		{2359DAF7-9E03-47AF-8E26-2CF45ACC9ED2}.Release|x86.ActiveCfg = Debug|x86
 		{2359DAF7-9E03-47AF-8E26-2CF45ACC9ED2}.Release|x86.Build.0 = Debug|x86
-		{977B9F0F-86BE-49A5-A3D4-512415FB024A}.Debug|x64.ActiveCfg = Debug|x86
-		{977B9F0F-86BE-49A5-A3D4-512415FB024A}.Debug|x64.Build.0 = Debug|x86
+		{977B9F0F-86BE-49A5-A3D4-512415FB024A}.Debug|x64.ActiveCfg = Release|x86
+		{977B9F0F-86BE-49A5-A3D4-512415FB024A}.Debug|x64.Build.0 = Release|x86
 		{977B9F0F-86BE-49A5-A3D4-512415FB024A}.Debug|x86.ActiveCfg = Debug|x86
 		{977B9F0F-86BE-49A5-A3D4-512415FB024A}.Debug|x86.Build.0 = Debug|x86
 		{977B9F0F-86BE-49A5-A3D4-512415FB024A}.Release|x64.ActiveCfg = Debug|x86
