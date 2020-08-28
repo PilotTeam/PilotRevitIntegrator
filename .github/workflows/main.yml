@@ -16,7 +16,7 @@ env:
 
 on:
   push:
-    branches: [ CI ]
+    branches: [ master ]
 
 jobs:
   build:
@@ -75,7 +75,6 @@ jobs:
         artifacts: ${{ env.RELESE_FOLDER }}\binaries${{ env.TAG_NAME }}.zip
         tag: ${{ env.TAG_NAME }}
         name: ${{ env.RELEASE_NAME }}
-        body: " "
       env:
           TAG_NAME: ${{ steps.date.outputs.date }}.${{ github.run_id }}
           RELEASE_NAME: ${{ steps.date.outputs.date }}
