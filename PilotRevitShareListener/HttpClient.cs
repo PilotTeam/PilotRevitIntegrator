@@ -140,7 +140,7 @@ namespace PilotRevitShareListener
                 return _updateCallback;
             throw new NotImplementedException(interfaceName);
         }
-        
+         
         private class CallbackReceiverAdapter : ICallbackReceiver
         {
             private readonly Unmarshaller _unmarshaller;
