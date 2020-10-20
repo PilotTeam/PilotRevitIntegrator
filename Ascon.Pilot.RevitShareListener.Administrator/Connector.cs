@@ -19,12 +19,13 @@ namespace Ascon.Pilot.RevitShareListener.Administrator
         {
             try
             {
-                //if (_service.GetStatus() == "stopped")
-                //{
-                //    Console.WriteLine( "start service first");
-                //    return;
-                //}
-
+#if !DEBUG
+                if (_service.GetStatus() == "stopped")
+                {
+                    Console.WriteLine("start service first");
+                    return;
+                }
+#endif
                 var serializedCommand = JsonConvert.SerializeObject(command);
                 NamedPipeClientStream pipeStream = new NamedPipeClientStream(".", _pipeName, PipeDirection.InOut, PipeOptions.Asynchronous);
 
