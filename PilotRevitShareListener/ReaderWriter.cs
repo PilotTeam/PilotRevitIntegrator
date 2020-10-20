@@ -42,7 +42,8 @@ namespace PilotRevitShareListener
                     Settings = (Settings)serializer.Deserialize(reader);
                 if (Settings != null)
                     Settings.Password = Settings.Password.EncryptAes();
-            }catch(FileNotFoundException)
+            }
+            catch(FileNotFoundException)
             {
                 Settings = new Settings();
                 Settings.LicenseCode = 100;
@@ -58,6 +59,8 @@ namespace PilotRevitShareListener
         private string GetSettingsPath()
         {
             string path = System.Environment.GetFolderPath(System.Environment.SpecialFolder.CommonApplicationData) + @"\" + _serviceName;
+            if (!Directory.Exists(path))
+                Directory.CreateDirectory(path);
             return Path.Combine(path, SETTINGS_NAME);
         }
     }

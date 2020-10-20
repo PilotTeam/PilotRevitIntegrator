@@ -134,7 +134,7 @@ namespace PilotRevitShareListener
 
         private string Connect(PipeCommand command)
         {
-            if (_settings.SharePath == "")
+            if (string.IsNullOrEmpty(_settings.SharePath))
                 return "Revit shared folder path is not set";
 
             var result = _reconnectProvider.Reconnect(command);
