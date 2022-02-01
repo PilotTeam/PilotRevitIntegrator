@@ -35,7 +35,7 @@ namespace PilotRevitShareListener
                 {
                     try
                     {
-                        using (var fileStream = File.Open(filePath, FileMode.Open))
+                        using (var fileStream = File.Open(filePath, FileMode.Open, FileAccess.Read))
                         {
                             _fileWaiter.Notify(new FileArgs(fileStream, filePath));
                         }
