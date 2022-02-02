@@ -26,13 +26,13 @@ jobs:
     steps:
     - uses: actions/checkout@v1
     - name: Setup Nuget.exe
-      uses: warrenbuckley/Setup-Nuget@v1
+      uses: nuget/setup-nuget@v1
     - name: Restore packages
       run: |
            nuget restore ${{ env.SOLUTION }}
            nuget restore ${{ env.INSTALLER_SOLUTION }}
     - name: Setup MSBuild.exe
-      uses: warrenbuckley/Setup-MSBuild@v1
+      uses: microsoft/setup-msbuild@v1.0.3
     - name: Build with MSBuild 
       run: msbuild ${{ env.SOLUTION }} -p:Configuration=Release
     - name: Build Installer
