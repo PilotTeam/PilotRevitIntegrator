@@ -152,6 +152,9 @@ namespace PilotRevitShareListener
 
         private void CreateNewListener()
         {
+            if (string.IsNullOrEmpty(_settings.SharePath))
+                return;
+
             _revitShareListener?.Dispose();
             _revitShareListener = new RevitShareListener(_objectUploader, _settings);
         }

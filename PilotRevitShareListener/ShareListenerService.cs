@@ -34,21 +34,23 @@ namespace PilotRevitShareListener
                 _serverConnector = new ServerConnector(_settings);
 
                 var objectModifier = new ObjectModifier(_serverConnector);
-                _objectUploader = new ObjectUploader( objectModifier, _serverConnector);
+                _objectUploader = new ObjectUploader(objectModifier, _serverConnector);
 
                 _connectProvider = new ConnectProvider(_logger, _settings, _serverConnector);
 
                 _revitShareListener = new RevitShareListener(_objectUploader, _settings);
-                
-                _pipeServer = new PipeServer(_logger, readerWriter,_connectProvider,_objectUploader, _revitShareListener);
-                _pipeServer.Start();
 
                 _connectProvider.Connect();
-                _logger.InfoFormat("{0} Started Successfully", ServiceName);
+                _logger.InfoFormat("{0} is Started Successfully", ServiceName);
+
             }
-            catch (Exception)//in case of incorrect settings.xml 
+            catch (Exception)  //if settings.xml is incorect or if Pilot-Server is down 
             {
-                _pipeServer = new PipeServer(_logger, readerWriter, _connectProvider, _objectUploader ,null);
+
+            }
+            finally
+            {
+                _pipeServer = new PipeServer(_logger, readerWriter, _connectProvider, _objectUploader, null);
                 _pipeServer.Start();
             }
         }
