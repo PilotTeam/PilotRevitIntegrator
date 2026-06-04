@@ -20,16 +20,9 @@ namespace PilotRevitShareListener.Server
 
         public ChangesetUploader(Stream fileStream, IFileArchiveApi fileArchiveApi, DChangesetData changeset)
         {
-            if (fileStream == null)
-                throw new ArgumentNullException("fileStream");
-            if (fileArchiveApi == null)
-                throw new ArgumentNullException("fileArchiveApi");
-            if (changeset == null)
-                throw new ArgumentNullException("changeset");
-
-            _fileArchiveApi = fileArchiveApi;
-            _changeset = changeset;
-            _fileStream = fileStream;
+            _fileArchiveApi = fileArchiveApi ?? throw new ArgumentNullException("fileArchiveApi");
+            _changeset = changeset ?? throw new ArgumentNullException("changeset");
+            _fileStream = fileStream ?? throw new ArgumentNullException("fileStream");
         }
 
         private DFile FindFileBody(Guid id)
@@ -48,7 +41,7 @@ namespace PilotRevitShareListener.Server
 
         public void Upload()
         {
-            foreach (var id in _changeset.NewFileBodies)
+            foreach (var id in _changeset.GetChangedFiles())
             {
                 var body = FindFileBody(id);
                 CreateFile(body);

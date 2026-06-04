@@ -58,12 +58,14 @@ namespace PilotRevitShareListener
         protected override void OnStart(string[] args)
         {
             _logger = LogManager.GetLogger(typeof(ShareListenerService));
-            var appender = new log4net.Appender.RollingFileAppender();
-            appender.AppendToFile = true;
-            appender.File = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData) + @"\"+ServiceName+@"\Logs\listener.log"; 
-            appender.MaxFileSize = 100000;
-            appender.MaxSizeRollBackups = 10;
-            appender.RollingStyle = log4net.Appender.RollingFileAppender.RollingMode.Size;
+            var appender = new log4net.Appender.RollingFileAppender
+            {
+                AppendToFile = true,
+                File = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData) + @"\" + ServiceName + @"\Logs\listener.log",
+                MaxFileSize = 100000,
+                MaxSizeRollBackups = 10,
+                RollingStyle = log4net.Appender.RollingFileAppender.RollingMode.Size
+            };
             log4net.Config.BasicConfigurator.Configure(appender);
             appender.Threshold = log4net.Core.Level.All;
             appender.ActivateOptions();
