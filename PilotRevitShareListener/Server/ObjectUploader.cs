@@ -65,7 +65,6 @@ namespace PilotRevitShareListener.Server
 
             var changesetData = new DChangesetData { Identity = Guid.NewGuid() };
             changesetData.Changes.Add(change);
-            changesetData.NewFileBodies.Add(file.Body.Id);
 
             Logger.InfoFormat("Changeset({0}) created", changesetData.Id);
             return changesetData;

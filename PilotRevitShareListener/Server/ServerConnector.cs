@@ -1,7 +1,6 @@
-﻿using System.Linq;
-using System.Threading;
-using Ascon.Pilot.Server.Api;
+﻿using Ascon.Pilot.Server.Api;
 using Ascon.Pilot.Server.Api.Contracts;
+using Ascon.Pilot.Transport;
 
 namespace PilotRevitShareListener.Server
 {

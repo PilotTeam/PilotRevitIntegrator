@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Threading;
-using System.Threading.Tasks;
 using log4net;
 using Ascon.Pilot.SharedProject;
 using Ascon.Pilot.Common;
-using Ascon.Pilot.Server.Api;
+using Ascon.Pilot.Transport;
 
 namespace PilotRevitShareListener.Server
 {
@@ -12,10 +11,10 @@ namespace PilotRevitShareListener.Server
     {
         private readonly ILog _logger;
         private readonly object _lock;
-        private IServerConnector _serverConnector;
-        private Settings _settings;
+        private readonly IServerConnector _serverConnector;
+        private readonly Settings _settings;
         private bool _isConnected;
-        private int _reconnectTimeOut = 15000;
+        private readonly int _reconnectTimeOut = 15000;
 
         public ConnectProvider(ILog logger , Settings settings, IServerConnector serverConnector)
         {
@@ -96,12 +95,7 @@ namespace PilotRevitShareListener.Server
         public bool Reconnect(PipeCommand command)
         {
             object[] dataBuffer = new object[] { _settings.ServerUrl, _settings.DbName, _settings.Login, _settings.Password };
-            string[] subs = SplitUrl(command.args["url"]);
-            if (subs == null)
-            {
-                subs = new string[] { command.args["url"], "" }; //if database name wasn't typed
-            }
-
+            string[] subs = SplitUrl(command.args["url"]) ?? (new string[] { command.args["url"], "" });
             _settings.ServerUrl = subs[0];
             _settings.DbName = subs[1];
             _settings.Login = command.args["login"];

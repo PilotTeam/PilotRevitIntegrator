@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
 using System.Xml.Linq;
+using System.Reactive.Linq;
 using Ascon.Pilot.SDK.Extensions;
 using Ascon.Pilot.SharedProject;
 using Newtonsoft.Json; 
