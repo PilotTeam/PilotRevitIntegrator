@@ -8,7 +8,7 @@
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Ascon.Pilot.SDK.RevitShareAgregator</RootNamespace>
-    <AssemblyName>Ascon.Pilot.SDK.RevitShareAgregator.ext</AssemblyName>
+    <AssemblyName>Ascon.Pilot.SDK.RevitShareAgregator.ext2</AssemblyName>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile>
