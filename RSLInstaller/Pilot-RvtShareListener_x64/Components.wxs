@@ -8,7 +8,6 @@
       <Component Id="Pilot_RvtShareListenerService.Administrator" Win64="$(var.Win64)" Guid="5125FFC6-5C91-4663-804D-DBE6AE380537">
         <File Id="Pilot_RvtShareListenerService.Administrator.exe" Name ="RSLAdmin.exe" />
         <File Id="Pilot_RvtShareListenerService.Administrator.exe.config" Name="RSLAdmin.exe.config" />
-        <File Id="Ascon.Pilot.SharedProject.dll" Name = "Ascon.Pilot.SharedProject.dll" />
       </Component>
     </DirectoryRef>
 
@@ -21,19 +20,25 @@
         <File Id = "Microsoft.AspNetCore.Hosting.Abstractions.dll" Name = "Microsoft.AspNetCore.Hosting.Abstractions.dll" />
         <File Id = "Microsoft.AspNetCore.Hosting.Server.Abstractions.dll" Name = "Microsoft.AspNetCore.Hosting.Server.Abstractions.dll" />
         <File Id = "Microsoft.AspNetCore.Http.Abstractions.dll" Name = "Microsoft.AspNetCore.Http.Abstractions.dll" />
-        <File Id = "Microsoft.AspNetCore.Http.Features.dll" Name = "Microsoft.AspNetCore.Http.Features.dll" />
-        <File Id = "Microsoft.Extensions.Configuration.Abstractions.dll" Name = "Microsoft.Extensions.Configuration.Abstractions.dll" />
+		<File Id = "Microsoft.AspNetCore.Http.Features.dll" Name = "Microsoft.AspNetCore.Http.Features.dll" />
+		<File Id = "Microsoft.Bcl.AsyncInterfaces.dll" Name = "Microsoft.Bcl.AsyncInterfaces.dll" />
+		<File Id = "Microsoft.Extensions.Configuration.Abstractions.dll" Name = "Microsoft.Extensions.Configuration.Abstractions.dll" />
         <File Id = "Microsoft.Extensions.DependencyInjection.Abstractions.dll" Name = "Microsoft.Extensions.DependencyInjection.Abstractions.dll" />
         <File Id = "Microsoft.Extensions.DependencyInjection.dll" Name = "Microsoft.Extensions.DependencyInjection.dll" />
-        <File Id = "Microsoft.Extensions.FileProviders.Abstractions.dll" Name = "Microsoft.Extensions.FileProviders.Abstractions.dll" />
+		<File Id = "Microsoft.Extensions.Diagnostics.Abstractions.dll" Name = "Microsoft.Extensions.Diagnostics.Abstractions.dll" />
+		<File Id = "Microsoft.Extensions.FileProviders.Abstractions.dll" Name = "Microsoft.Extensions.FileProviders.Abstractions.dll" />
         <File Id = "Microsoft.Extensions.Hosting.Abstractions.dll" Name = "Microsoft.Extensions.Hosting.Abstractions.dll" />
         <File Id = "Microsoft.Extensions.Logging.Abstractions.dll" Name = "Microsoft.Extensions.Logging.Abstractions.dll" />
         <File Id = "Microsoft.Extensions.Options.dll" Name = "Microsoft.Extensions.Options.dll" />
         <File Id = "Microsoft.Extensions.Primitives.dll" Name = "Microsoft.Extensions.Primitives.dll" />
         <File Id = "Microsoft.Win32.Registry.dll" Name = "Microsoft.Win32.Registry.dll" />
+		<File Id = "protobuf_net_Core.dll" Name = "protobuf-net.Core.dll" />
         <File Id = "protobuf_net.dll" Name = "protobuf-net.dll" />
         <File Id = "System.Buffers.dll" Name = "System.Buffers.dll" />
-        <File Id = "System.Memory.dll" Name = "System.Memory.dll" />
+		<File Id = "System.Collections.Immutable.dll" Name = "System.Collections.Immutable.dll" />
+		<File Id = "System.Diagnostics.DiagnosticSource.dll" Name = "System.Diagnostics.DiagnosticSource.dll" />
+		<File Id = "System.IO.Pipelines.dll" Name = "System.IO.Pipelines.dll" />
+		<File Id = "System.Memory.dll" Name = "System.Memory.dll" />
 		<File Id = "System.Numerics.Vectors.dll" Name = "System.Numerics.Vectors.dll" />
         <File Id = "System.Reflection.DispatchProxy.dll" Name = "System.Reflection.DispatchProxy.dll" />
         <File Id = "System.Runtime.CompilerServices.Unsafe.dll" Name = "System.Runtime.CompilerServices.Unsafe.dll" />
@@ -42,7 +47,11 @@
         <File Id = "System.Security.Cryptography.Xml.dll" Name = "System.Security.Cryptography.Xml.dll" />
         <File Id = "System.Security.Permissions.dll" Name = "System.Security.Permissions.dll" />
         <File Id = "System.Security.Principal.Windows.dll" Name = "System.Security.Principal.Windows.dll" />
+		<File Id = "System.ServiceModel.Duplex.dll" Name = "System.ServiceModel.Duplex.dll" />
+		<File Id = "System.ServiceModel.Primitives.dll" Name = "System.ServiceModel.Primitives.dll" />
+		<File Id = "System.ServiceModel.Security.dll" Name = "System.ServiceModel.Security.dll" />
 		<File Id = "System.Text.Encodings.Web.dll" Name = "System.Text.Encodings.Web.dll" />
+		<File Id = "System.Threading.Tasks.Extensions.dll" Name = "System.Threading.Tasks.Extensions.dll" />
         <File Id = "System.ValueTuple.dll" Name = "System.ValueTuple.dll" />
       </Component>
     </DirectoryRef>
@@ -50,12 +59,16 @@
     <DirectoryRef Id="APPLICATIONFOLDER" FileSource = "..\..\PilotRevitShareListener\bin\Release\">
       <Component Id="Pilot_RvtShareListenerService" Win64="$(var.Win64)" Guid="471AEEC5-70B4-4056-B7EB-8743FD195C08">
         <File Id="PilotRvtShareListener" Name ="Pilot-RvtShareListenerService.exe" />
+		<File Id="PilotRvtShareListenerService_config" Name ="Pilot-RvtShareListenerService.exe.config" />
         <File Id="Newtonsoft.Json.dll" Name ="Newtonsoft.Json.dll" />
         <File Id = "Ascon.Pilot.Common.dll" Name = "Ascon.Pilot.Common.dll" />
-        <File Id = "Ascon.Pilot.Core.dll" Name = "Ascon.Pilot.Core.dll" />
+		<File Id = "Ascon.Pilot.Core.dll" Name = "Ascon.Pilot.Core.dll" />
         <File Id = "Ascon.Pilot.DataClasses.dll" Name = "Ascon.Pilot.DataClasses.dll" />
-        <File Id = "Ascon.Pilot.Server.Api.dll" Name = "Ascon.Pilot.Server.Api.dll" />
-        <File Id = "Ascon.Pilot.Transport.dll" Name = "Ascon.Pilot.Transport.dll" />
+		<File Id = "Ascon.Pilot.DataModifier.dll" Name = "Ascon.Pilot.DataModifier.dll" />
+		<File Id = "Ascon.Pilot.Search.dll" Name = "Ascon.Pilot.Search.dll" />
+		<File Id = "Ascon.Pilot.Server.Api.dll" Name = "Ascon.Pilot.Server.Api.dll" />
+		<File Id = "Ascon.Pilot.SharedProject.dll" Name = "Ascon.Pilot.SharedProject.dll" />
+		<File Id = "Ascon.Pilot.Transport.dll" Name = "Ascon.Pilot.Transport.dll" />
         <File Id = "log4net.dll" Name = "log4net.dll" />
         <ServiceInstall
           Id="PilotRvtShareListener"
