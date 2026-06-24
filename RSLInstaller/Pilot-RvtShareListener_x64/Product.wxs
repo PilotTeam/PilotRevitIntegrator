@@ -4,7 +4,7 @@
 
   <?include "Variables.wxi" ?>
   
-	<Product Id="*" Name="$(var.ProductName)" Language="1033" Version="1.0.0.0"  Manufacturer="$(var.Manufacturer)" UpgradeCode="B3204DD0-35A4-4424-9FB6-D11E6D6BABEE">
+	<Product Id="*" Name="$(var.ProductName)" Language="1033" Version="26.11.0.61894"  Manufacturer="$(var.Manufacturer)" UpgradeCode="B3204DD0-35A4-4424-9FB6-D11E6D6BABEE">
 		<Package InstallerVersion="200" Compressed="yes" InstallScope="perMachine" />
 
 		<MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />

@@ -10,7 +10,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("Ascon.Pilot.SDK.Extensions")]
-[assembly: AssemblyCopyright("Copyright © 2018")]
+[assembly: AssemblyCopyright("Copyright © 2026")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -32,7 +32,7 @@ using System.Runtime.InteropServices;
 // Можно задать все значения или принять номера сборки и редакции по умолчанию 
 // используя "*", как показано ниже:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("18.0.28.29011")]
-[assembly: AssemblyFileVersion("18.0.28.29011")]
+[assembly: AssemblyVersion("26.11.0.61894")]
+[assembly: AssemblyFileVersion("26.11.0.61894")]
 
 [assembly: InternalsVisibleTo("ProjectCloneWizard.Tests")]
